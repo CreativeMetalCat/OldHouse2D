@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "Interactions.h"
 #include "Camera/CameraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
@@ -110,8 +111,23 @@ void AOldHouseCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AOldHouseCharacter::MoveRight);
 
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AOldHouseCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AOldHouseCharacter::TouchStopped);
+	PlayerInputComponent->BindAction("Interact",IE_Pressed,this,&AOldHouseCharacter::Interact);
+}
+
+void AOldHouseCharacter::Interact()
+{
+	TArray<AActor*> actors;
+	GetCapsuleComponent()->GetOverlappingActors(actors);
+	if (actors.Num() > 0)
+	{
+		for (int i = 0; i < actors.Num(); i++)
+		{
+			if (actors[i]->Implements<UInteractions>() || (Cast<IInteractions>(actors[i]) != nullptr))
+			{
+				IInteractions::Execute_Interact(actors[i], this);
+			}
+		}
+	}
 }
 
 void AOldHouseCharacter::MoveRight(float Value)
