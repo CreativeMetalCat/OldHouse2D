@@ -80,6 +80,17 @@ AOldHouseCharacter::AOldHouseCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Animation
 
+void AOldHouseCharacter::HoldObject(AHoldableActor* object)
+{
+	if(object != nullptr)
+	{
+		CurrentlyHeldActor = object;
+		object->BeHeld(this);
+		
+		object->AttachToComponent(GetSprite(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("ObjectHolding"));
+	}	
+}
+
 void AOldHouseCharacter::UpdateAnimation()
 {
 	const FVector PlayerVelocity = GetVelocity();
@@ -112,6 +123,10 @@ void AOldHouseCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAxis("MoveRight", this, &AOldHouseCharacter::MoveRight);
 
 	PlayerInputComponent->BindAction("Interact",IE_Pressed,this,&AOldHouseCharacter::Interact);
+
+	
+
+	PlayerInputComponent->BindAction("DropItem",IE_Pressed,this,&AOldHouseCharacter::PickupItem);
 }
 
 void AOldHouseCharacter::Interact()
@@ -128,6 +143,44 @@ void AOldHouseCharacter::Interact()
 			}
 		}
 	}
+}
+
+void AOldHouseCharacter::DropItem()
+{
+	if (CurrentlyHeldActor != nullptr)
+	{	
+		CurrentlyHeldActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentlyHeldActor->BeDropped(this);
+		CurrentlyHeldActor->SetActorLocation(GetSprite()->GetSocketLocation(TEXT("DropItemPoint")));
+		CurrentlyHeldActor = nullptr;
+	}
+}
+
+void AOldHouseCharacter::PickupItem()
+{
+	if (CurrentlyHeldActor == nullptr)
+	{
+		TArray<AActor*> actors;
+		GetCapsuleComponent()->GetOverlappingActors(actors);
+		if (actors.Num() > 0)
+		{
+			for (int i = 0; i < actors.Num(); i++)
+			{
+				if (actors[i]->Implements<UInteractions>() || (Cast<IInteractions>(actors[i]) != nullptr))
+				{
+					if (IInteractions::Execute_CanActorBeHeld((actors[i])) && CurrentlyHeldActor == nullptr)
+					{
+						HoldObject(Cast<AHoldableActor>(actors[i]));
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		DropItem();
+	}
+	
 }
 
 bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)

@@ -6,6 +6,7 @@
 #include "PaperCharacter.h"
 #include "Objects/ItemData.h"
 #include "PickupInterface.h"
+#include "Objects/Hold/HoldableActor.h"
 #include "OldHouseCharacter.generated.h"
 
 class UTextRenderComponent;
@@ -45,6 +46,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
 	TArray<FItemData> Items;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Hold)
+	AHoldableActor* CurrentlyHeldActor = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void HoldObject(AHoldableActor*object);
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -64,6 +71,10 @@ protected:
 	// End of APawn interface
 
 	void Interact();
+
+	void DropItem();
+
+	void PickupItem();
 
 	virtual bool PickupItem_Implementation(FItemData item) override;
 

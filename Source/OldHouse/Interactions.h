@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void Interact(AActor*interactor);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	bool CanActorBeHeld();
 };
