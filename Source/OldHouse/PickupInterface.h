@@ -26,4 +26,16 @@ public:
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	bool PickupItem(FItemData item);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	bool HasItem(FItemData item);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	void RemoveItem(FItemData item);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	bool HasKey(int keyId);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+    void RemoveKey(int keyId);
 };

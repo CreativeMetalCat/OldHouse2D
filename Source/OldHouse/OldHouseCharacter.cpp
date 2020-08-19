@@ -189,6 +189,67 @@ bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)
 	return true;
 }
 
+bool AOldHouseCharacter::HasItem_Implementation(FItemData item)
+{
+	if (Items.Num() > 0)
+	{
+		for (int i = 0; i < Items.Num(); i++)
+		{
+			if (Items[i].EngineName == item.EngineName)
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+void AOldHouseCharacter::RemoveItem_Implementation(FItemData item)
+{
+	if (Items.Num() > 0)
+	{
+		for (int i = 0; i < Items.Num(); i++)
+		{
+			if (Items[i].EngineName == item.EngineName)
+			{
+				Items.RemoveAt(i);
+			}
+		}
+	}
+}
+
+bool AOldHouseCharacter::HasKey_Implementation(int keyId)
+{
+	if (Items.Num() > 0)
+	{
+		for (int i = 0; i < Items.Num(); i++)
+		{
+			if (Items[i].KeyId == keyId && Items[i].bIsKey)
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+void AOldHouseCharacter::RemoveKey_Implementation(int keyId)
+{
+	if (Items.Num() > 0)
+	{
+		for (int i = 0; i < Items.Num(); i++)
+		{
+			if (Items[i].KeyId == keyId && Items[i].bIsKey)
+			{
+				Items.RemoveAt(i);
+				return;
+			}
+		}
+	}
+}
+
 void AOldHouseCharacter::MoveRight(float Value)
 {
 	/*UpdateChar();*/

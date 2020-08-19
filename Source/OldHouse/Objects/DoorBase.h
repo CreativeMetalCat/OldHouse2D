@@ -51,7 +51,7 @@ public:
 	UPROPERTY(Category =Collision, VisibleAnywhere, BlueprintReadWrite)
 	UBoxComponent* CollisionBox;
 
-	UPROPERTY(Category =Keys, VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = Keys, EditAnywhere, BlueprintReadWrite)
 	int KeyId = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
@@ -59,6 +59,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
 	USoundBase* CloseSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
+	USoundBase* UnlockSound;
 
 	void Interact_Implementation(AActor* interactor) override;
 };

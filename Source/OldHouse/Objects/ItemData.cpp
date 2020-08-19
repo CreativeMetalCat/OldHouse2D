@@ -7,6 +7,9 @@ FItemData FItemData::ConvertFromPointer(FItemData* data)
 {
     FItemData res;
     res.DisplaySprite = data->DisplaySprite;
-    res.KeyId = data->KeyId;
+    res.KeyId  = data->KeyId;
+    res.bIsKey = data->bIsKey;
     return res;
 }
+
+

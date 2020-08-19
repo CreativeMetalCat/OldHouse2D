@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "OldHouse/Interactions.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "HoldableActor.generated.h"
 
 UCLASS()
@@ -29,11 +30,28 @@ public:
 
 	virtual bool CanActorBeHeld_Implementation() override;
 
+	
+	/*If this actor can not yet be picked up OR if just actor's physics system is needed*/
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	bool bCanBePickedUp = true;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category= Break)
+	bool bCanBeBroken = false;
+
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBoxComponent*ColliderBox;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Holder = nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
+	USoundBase* BreakSound;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
+	USoundBase* HitSound;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
+	USoundBase* PickupSound;
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void BeHeld(AActor* HoldingActor);
@@ -44,4 +62,9 @@ public:
     void BeDropped(AActor* HoldingActor);
 
 	virtual void BeDropped_Implementation(AActor* HoldingActor);
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+    void Break();
+
+	virtual void Break_Implementation();
 };

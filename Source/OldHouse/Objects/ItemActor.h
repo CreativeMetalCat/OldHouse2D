@@ -26,24 +26,36 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UPaperSpriteComponent*Sprite;
-	
+	UPaperSpriteComponent* Sprite;
+
 	UPROPERTY(Category =Collision, VisibleAnywhere, BlueprintReadWrite)
 	UBoxComponent* CollisionBox;
-	
-	
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Item)
 	FItemData Item;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Item)
 	FDataTableRowHandle ItemData;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Pickup)
+	bool bPickupOnOverlap = true;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Pickup)
+	USoundBase* PickupSound;
+
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                       int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void Interact_Implementation(AActor* interactor) override;
+
+	virtual void BePickedUp(AActor* interactor);
 };

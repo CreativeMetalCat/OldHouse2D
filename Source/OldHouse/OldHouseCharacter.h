@@ -78,6 +78,14 @@ protected:
 
 	virtual bool PickupItem_Implementation(FItemData item) override;
 
+	virtual bool HasItem_Implementation(FItemData item) override;
+
+	virtual void RemoveItem_Implementation(FItemData item) override;
+
+	virtual bool HasKey_Implementation(int keyId) override;
+
+	virtual void RemoveKey_Implementation(int keyId) override;
+
 public:
 	AOldHouseCharacter();
 

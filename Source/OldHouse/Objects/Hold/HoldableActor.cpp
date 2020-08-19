@@ -3,6 +3,7 @@
 
 #include "HoldableActor.h"
 
+
 // Sets default values
 AHoldableActor::AHoldableActor()
 {
@@ -34,18 +35,34 @@ void AHoldableActor::Interact_Implementation(AActor* interactor)
 
 bool AHoldableActor::CanActorBeHeld_Implementation()
 {
-	return Holder == nullptr;
+	return (bCanBePickedUp && Holder == nullptr);
 }
 
 void AHoldableActor::BeHeld_Implementation(AActor* HoldingActor)
 {
 	SetActorEnableCollision(false);
 	Holder = HoldingActor;
+	if(PickupSound!=nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
+	}
 }
 
 void AHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
 {
 	SetActorEnableCollision(true);
 	Holder = nullptr;
+	if(PickupSound!=nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
+	}
+}
+
+void AHoldableActor::Break_Implementation()
+{
+	if(BreakSound!=nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(),BreakSound,GetActorLocation(),GetActorRotation());
+	}
 }
 

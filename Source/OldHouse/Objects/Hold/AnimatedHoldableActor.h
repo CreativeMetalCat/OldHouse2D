@@ -4,32 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "HoldableActor.h"
-#include "PaperSpriteComponent.h"
-
-#include "SpriteHoldableActor.generated.h"
+#include "Paper2D/Classes/PaperFlipbookComponent.h"
+#include "AnimatedHoldableActor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class OLDHOUSE_API ASpriteHoldableActor : public AHoldableActor
+class OLDHOUSE_API AAnimatedHoldableActor : public AHoldableActor
 {
 	GENERATED_BODY()
-
-
 	public:
-	ASpriteHoldableActor();
+	AAnimatedHoldableActor();
+	
+	UPROPERTY(Category = Animation, EditDefaultsOnly, BlueprintReadWrite)
+	UPaperFlipbookComponent* Sprite;
 
-	
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UPaperSpriteComponent* Sprite;
-
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UPaperSprite*NormalStateSprite;
-	
-	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UPaperSprite*BrokenStateSprite;
-	
+	UBoxComponent* PhysicsBox;
 
 	virtual void BeHeld_Implementation(AActor* HoldingActor) override;
 

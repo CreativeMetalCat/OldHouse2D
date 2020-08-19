@@ -15,10 +15,13 @@ ASpriteHoldableActor::ASpriteHoldableActor()
 
 void ASpriteHoldableActor::BeHeld_Implementation(AActor* HoldingActor)
 {
-
     SetActorEnableCollision(false);
     Holder = HoldingActor;
     Sprite->SetSimulatePhysics(false);
+    if(PickupSound!=nullptr)
+    {
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
+    }
 }
 
 void ASpriteHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
@@ -26,4 +29,8 @@ void ASpriteHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
     SetActorEnableCollision(true);
     Holder = nullptr;
     Sprite->SetSimulatePhysics(true);
+    if(PickupSound!=nullptr)
+    {
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
+    }
 }

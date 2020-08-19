@@ -3,6 +3,7 @@
 
 #include "DoorBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "OldHouse/PickupInterface.h"
 
 #include "PaperFlipbookComponent.h"
 
@@ -71,6 +72,21 @@ void ADoorBase::Interact_Implementation(AActor* interactor)
 	if (!bLocked)
 	{
 		Toggle();
+	}
+	else
+	{
+		if (interactor->Implements<UPickupInterface>() || (Cast<IPickupInterface>(interactor) != nullptr))
+		{
+			if(IPickupInterface::Execute_HasKey(interactor, KeyId))
+			{
+				bLocked = false;
+				IPickupInterface::Execute_RemoveKey(interactor,KeyId);
+				if (UnlockSound != nullptr)
+				{
+					UGameplayStatics::PlaySoundAtLocation(GetWorld(), UnlockSound, GetActorLocation(), GetActorRotation());
+				}
+			}
+		}
 	}
 }
 
