@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
+#include "Objects/ItemData.h"
+#include "PickupInterface.h"
 #include "OldHouseCharacter.generated.h"
 
 class UTextRenderComponent;
@@ -17,7 +19,7 @@ class UTextRenderComponent;
  * The Sprite component (inherited from APaperCharacter) handles the visuals
  */
 UCLASS(config=Game)
-class AOldHouseCharacter : public APaperCharacter
+class AOldHouseCharacter : public APaperCharacter,public IPickupInterface
 {
 	GENERATED_BODY()
 
@@ -40,6 +42,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
+	TArray<FItemData> Items;
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
@@ -59,6 +64,8 @@ protected:
 	// End of APawn interface
 
 	void Interact();
+
+	virtual bool PickupItem_Implementation(FItemData item) override;
 
 public:
 	AOldHouseCharacter();

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "EdGraphSchema_K2.h"
+//#include "EdGraphSchema_K2.h"
 #include "GameFramework/Actor.h"
 #include "OldHouse/Interactions.h"
 #include  "PaperSpriteComponent.h"
@@ -50,6 +50,9 @@ public:
 
 	UPROPERTY(Category =Collision, VisibleAnywhere, BlueprintReadWrite)
 	UBoxComponent* CollisionBox;
+
+	UPROPERTY(Category =Keys, VisibleAnywhere, BlueprintReadWrite)
+	int KeyId = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Sound)
 	USoundBase* OpenSound;

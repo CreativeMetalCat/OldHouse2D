@@ -130,6 +130,12 @@ void AOldHouseCharacter::Interact()
 	}
 }
 
+bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)
+{
+	Items.Add(item);
+	return true;
+}
+
 void AOldHouseCharacter::MoveRight(float Value)
 {
 	/*UpdateChar();*/
