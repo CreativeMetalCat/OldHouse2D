@@ -42,3 +42,15 @@ void AAnimatedHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
         UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
     }
 }
+
+void AAnimatedHoldableActor::Break_Implementation()
+{
+    if(BrokenStateAnimations.Num()>0)
+    {
+        int32 id = FMath::RandRange(0, BrokenStateAnimations.Num() - 1);
+        if(BrokenStateAnimations[id]!=nullptr)
+        {
+            Sprite->SetFlipbook(BrokenStateAnimations[id]);
+        }
+    }
+}

@@ -38,11 +38,23 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category= Break)
 	bool bCanBeBroken = false;
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category= Break)
+	bool bBroken = false;
+
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBoxComponent*ColliderBox;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor* Holder = nullptr;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	bool bHasPhysicsSound = true;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	float MinVelocityOnHitToProduceSound = 1000.f;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	float MinVelocityOnHitToBreak = 2000.f;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
 	USoundBase* BreakSound;
@@ -67,4 +79,8 @@ public:
     void Break();
 
 	virtual void Break_Implementation();
+
+	UFUNCTION()
+    void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                           int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

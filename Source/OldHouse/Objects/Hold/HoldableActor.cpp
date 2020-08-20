@@ -12,13 +12,15 @@ AHoldableActor::AHoldableActor()
 
 	ColliderBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	ColliderBox->SetCollisionResponseToAllChannels(::ECR_Overlap);
+
+	ColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AHoldableActor::OnBoxBeginOverlap);
 }
 
 // Called when the game starts or when spawned
 void AHoldableActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AHoldableActor::OnBoxBeginOverlap);
 }
 
 // Called every frame
@@ -63,6 +65,30 @@ void AHoldableActor::Break_Implementation()
 	if(BreakSound!=nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(),BreakSound,GetActorLocation(),GetActorRotation());
+	}
+}
+
+void AHoldableActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bHasPhysicsSound)
+	{
+		if (OtherActor->GetVelocity().Size() > MinVelocityOnHitToProduceSound || GetVelocity().Size() > MinVelocityOnHitToProduceSound)
+		{
+			if (HitSound != nullptr)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSound, GetActorLocation(), GetActorRotation());
+			}
+		}
+
+		if ((OtherActor->GetVelocity().Size() > MinVelocityOnHitToBreak || GetVelocity().Size() > MinVelocityOnHitToBreak)&&!bBroken)
+		{
+			bBroken = true;
+			Break();
+			if (BreakSound != nullptr)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), BreakSound, GetActorLocation(), GetActorRotation());
+			}
+		}
 	}
 }
 

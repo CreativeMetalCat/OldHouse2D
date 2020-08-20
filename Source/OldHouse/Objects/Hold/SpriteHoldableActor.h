@@ -28,10 +28,12 @@ class OLDHOUSE_API ASpriteHoldableActor : public AHoldableActor
 	UPaperSprite*NormalStateSprite;
 	
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UPaperSprite*BrokenStateSprite;
+	TArray<UPaperSprite*>BrokenStateSprites;
 	
 
 	virtual void BeHeld_Implementation(AActor* HoldingActor) override;
 
 	virtual void BeDropped_Implementation(AActor* HoldingActor) override;
+	
+	virtual void Break_Implementation() override;
 };

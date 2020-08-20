@@ -20,10 +20,15 @@ class OLDHOUSE_API AAnimatedHoldableActor : public AHoldableActor
 	UPROPERTY(Category = Animation, EditDefaultsOnly, BlueprintReadWrite)
 	UPaperFlipbookComponent* Sprite;
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TArray<UPaperFlipbook*>BrokenStateAnimations;
+
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBoxComponent* PhysicsBox;
 
 	virtual void BeHeld_Implementation(AActor* HoldingActor) override;
 
 	virtual void BeDropped_Implementation(AActor* HoldingActor) override;
+
+	virtual void Break_Implementation() override;
 };

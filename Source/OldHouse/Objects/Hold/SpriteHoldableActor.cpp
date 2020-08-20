@@ -34,3 +34,15 @@ void ASpriteHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
         UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
     }
 }
+
+void ASpriteHoldableActor::Break_Implementation()
+{
+    if (BrokenStateSprites.Num() > 0)
+    {
+        int32 id = FMath::RandRange(0, BrokenStateSprites.Num() - 1);
+        if(BrokenStateSprites[id]!=nullptr)
+        {
+            Sprite->SetSprite(BrokenStateSprites[id]);
+        }
+    }
+}
