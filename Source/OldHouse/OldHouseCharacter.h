@@ -35,6 +35,9 @@ class AOldHouseCharacter : public APaperCharacter,public IPickupInterface
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
 protected:
+
+	FTimerHandle StartPossesingTimerHandle;
+protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	class UPaperFlipbook* RunningAnimation;
@@ -71,10 +74,21 @@ protected:
 	// End of APawn interface
 
 	void Interact();
+	
 
 	void DropItem();
 
 	void PickupItem();
+
+	
+	
+	void Possess();
+
+	void StartPossess();
+
+	void StopPossess();
+
+	virtual void BeginPlay() override;
 
 	virtual bool PickupItem_Implementation(FItemData item) override;
 

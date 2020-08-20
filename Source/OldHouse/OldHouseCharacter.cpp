@@ -10,6 +10,8 @@
 #include "GameFramework/Controller.h"
 #include "Interactions.h"
 #include "Camera/CameraComponent.h"
+#include "Player/PossesivePlayerController.h"
+#include "Engine.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -124,7 +126,8 @@ void AOldHouseCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 
 	PlayerInputComponent->BindAction("Interact",IE_Pressed,this,&AOldHouseCharacter::Interact);
 
-	
+	PlayerInputComponent->BindAction("Possess",IE_Pressed,this,&AOldHouseCharacter::StartPossess);
+	PlayerInputComponent->BindAction("Possess",IE_Released,this,&AOldHouseCharacter::StopPossess);
 
 	PlayerInputComponent->BindAction("DropItem",IE_Pressed,this,&AOldHouseCharacter::PickupItem);
 }
@@ -181,6 +184,66 @@ void AOldHouseCharacter::PickupItem()
 		DropItem();
 	}
 	
+}
+
+void AOldHouseCharacter::Possess()
+{
+	GetWorldTimerManager().ClearTimer(StartPossesingTimerHandle);
+	if (GetController() != nullptr)
+	{
+		APossesivePlayerController*PC = Cast<APossesivePlayerController>(GetController());
+		if ( PC != nullptr)
+		{
+			GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Shooting line");
+			FHitResult hit;
+			PC->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery2,false,hit);
+			if(hit.bBlockingHit)
+			{
+				if(hit.Actor != nullptr)
+				{
+					AOldHouseCharacter* Other = Cast<AOldHouseCharacter>(hit.GetActor());
+					if(Other!=nullptr)
+					{
+						PC->Possess(Other);
+					}
+					else
+					{
+						GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Yellow,"Actor is not possesable. Actor name: " + hit.GetActor()->GetName());
+						
+					}
+				}
+				else
+				{
+					GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Hit but found no actor");
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,"Didn't hit");
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,hit.TraceStart.ToString());
+			}
+		}
+	}
+}
+
+void AOldHouseCharacter::StartPossess()
+{
+	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Starting...");
+	if(!StartPossesingTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().SetTimer(StartPossesingTimerHandle,this,&AOldHouseCharacter::Possess,3.f);
+	}
+}
+
+void AOldHouseCharacter::StopPossess()
+{
+	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Aborting...");
+	GetWorldTimerManager().ClearTimer(StartPossesingTimerHandle);
+}
+
+void AOldHouseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)
