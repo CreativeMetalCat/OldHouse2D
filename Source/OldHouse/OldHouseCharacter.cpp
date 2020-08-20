@@ -77,6 +77,8 @@ AOldHouseCharacter::AOldHouseCharacter()
 	// Enable replication on the Sprite component so animations show up when networked
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Overlap);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -95,14 +97,17 @@ void AOldHouseCharacter::HoldObject(AHoldableActor* object)
 
 void AOldHouseCharacter::UpdateAnimation()
 {
-	const FVector PlayerVelocity = GetVelocity();
-	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
-
-	// Are we moving or standing still?
-	UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
-	if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+	if(!bDead)
 	{
-		GetSprite()->SetFlipbook(DesiredAnimation);
+		const FVector PlayerVelocity = GetVelocity();
+		const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+
+		// Are we moving or standing still?
+		UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+		if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
+		{
+			GetSprite()->SetFlipbook(DesiredAnimation);
+		}
 	}
 }
 
@@ -204,7 +209,12 @@ void AOldHouseCharacter::Possess()
 					AOldHouseCharacter* Other = Cast<AOldHouseCharacter>(hit.GetActor());
 					if(Other!=nullptr)
 					{
-						PC->Possess(Other);
+						if(Other->CanBePossesed())
+						{
+							OnUnPosses();
+							PC->OnChangedBodies();
+							PC->Possess(Other);
+						}
 					}
 					else
 					{
@@ -231,7 +241,7 @@ void AOldHouseCharacter::StartPossess()
 	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Starting...");
 	if(!StartPossesingTimerHandle.IsValid())
 	{
-		GetWorldTimerManager().SetTimer(StartPossesingTimerHandle,this,&AOldHouseCharacter::Possess,3.f);
+		GetWorldTimerManager().SetTimer(StartPossesingTimerHandle,this,&AOldHouseCharacter::Possess,PossesTime);
 	}
 }
 
@@ -239,6 +249,11 @@ void AOldHouseCharacter::StopPossess()
 {
 	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Aborting...");
 	GetWorldTimerManager().ClearTimer(StartPossesingTimerHandle);
+}
+
+void AOldHouseCharacter::OnUnPosses()
+{
+	
 }
 
 void AOldHouseCharacter::BeginPlay()

@@ -14,4 +14,8 @@ class OLDHOUSE_API AAIHuman : public AOldHouseCharacter
 {
 	GENERATED_BODY()
 	public:
+
+	virtual void OnUnPosses() override;
+
+	virtual bool CanBePossesed() override;
 };

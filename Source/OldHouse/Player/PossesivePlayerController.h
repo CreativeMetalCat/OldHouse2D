@@ -16,5 +16,10 @@ class OLDHOUSE_API APossesivePlayerController : public APlayerController
 	public:
 	APawn* OriginalHost;
 
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	USoundBase* PossesSound;
+
+	virtual void OnChangedBodies();
+	
 	virtual void BeginPlay() override;
 };

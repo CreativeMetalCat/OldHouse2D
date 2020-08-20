@@ -46,11 +46,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	class UPaperFlipbook* UnPossesAnimation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
 	TArray<FItemData> Items;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Hold)
 	AHoldableActor* CurrentlyHeldActor = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death)
+	bool bDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	float PossesTime = 1.f;
+	
 
 	UFUNCTION(BlueprintCallable)
 	void HoldObject(AHoldableActor*object);
@@ -73,6 +83,9 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+
+	virtual bool CanBePossesed(){return true;}
+	
 	void Interact();
 	
 
@@ -87,6 +100,8 @@ protected:
 	void StartPossess();
 
 	void StopPossess();
+
+	virtual void OnUnPosses();
 
 	virtual void BeginPlay() override;
 
