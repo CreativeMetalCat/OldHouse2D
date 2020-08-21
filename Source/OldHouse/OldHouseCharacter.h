@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
 	class UPaperFlipbook* RunningAnimation;
 
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
+	UBoxComponent* WallGrabBox;
+	
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
@@ -60,6 +63,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	float PossesTime = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Climbing)
+	bool bIsHoldingWall = false;
 	
 
 	UFUNCTION(BlueprintCallable)
@@ -114,6 +120,15 @@ protected:
 	virtual bool HasKey_Implementation(int keyId) override;
 
 	virtual void RemoveKey_Implementation(int keyId) override;
+
+	virtual bool CanJumpInternal_Implementation() const override;
+
+	UFUNCTION()
+    void OnWallGrabBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                           int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+    void OnWallGrabBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	AOldHouseCharacter();

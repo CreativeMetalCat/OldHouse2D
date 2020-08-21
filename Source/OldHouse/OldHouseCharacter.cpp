@@ -51,6 +51,12 @@ AOldHouseCharacter::AOldHouseCharacter()
 	SideViewCameraComponent->bAutoActivate = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
+	WallGrabBox=CreateDefaultSubobject<UBoxComponent>(TEXT("WallGrabBox"));
+	WallGrabBox->SetupAttachment(RootComponent);
+	WallGrabBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	WallGrabBox->SetBoxExtent(FVector(24,32,8));
+	WallGrabBox->SetRelativeLocation(FVector(50,0,20));
+
 	// Configure character movement
 	GetCharacterMovement()->GravityScale = 2.0f;
 	GetCharacterMovement()->AirControl = 0.80f;
@@ -78,7 +84,14 @@ AOldHouseCharacter::AOldHouseCharacter()
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
 
-	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Overlap);
+	
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Ignore);
+
+	WallGrabBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	WallGrabBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
+
+	WallGrabBox->OnComponentBeginOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxBeginOverlap);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -259,6 +272,10 @@ void AOldHouseCharacter::OnUnPosses()
 void AOldHouseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	WallGrabBox->OnComponentBeginOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxBeginOverlap);
+
+	WallGrabBox->OnComponentEndOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxEndOverlap);
 }
 
 bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)
@@ -328,6 +345,76 @@ void AOldHouseCharacter::RemoveKey_Implementation(int keyId)
 	}
 }
 
+bool AOldHouseCharacter::CanJumpInternal_Implementation() const
+{
+	if(!bIsHoldingWall)
+	{
+		
+		// Ensure the character isn't currently crouched.
+		bool bCanJump = !bIsCrouched;
+
+		// Ensure that the CharacterMovement state is valid
+		bCanJump &= GetCharacterMovement()->CanAttemptJump();
+
+		if (bCanJump)
+		{
+			// Ensure JumpHoldTime and JumpCount are valid.
+			if (!bWasJumping || GetJumpMaxHoldTime() <= 0.0f)
+			{
+				if (JumpCurrentCount == 0 && GetCharacterMovement()->IsFalling())
+				{
+					bCanJump = JumpCurrentCount + 1 < JumpMaxCount;
+				}
+				else
+				{
+					bCanJump = JumpCurrentCount < JumpMaxCount;
+				}
+			}
+			else
+			{
+				// Only consider JumpKeyHoldTime as long as:
+				// A) The jump limit hasn't been met OR
+				// B) The jump limit has been met AND we were already jumping
+				const bool bJumpKeyHeld = (bPressedJump && JumpKeyHoldTime < GetJumpMaxHoldTime());
+				bCanJump = bJumpKeyHeld &&
+                            ((JumpCurrentCount < JumpMaxCount) || (bWasJumping && JumpCurrentCount == JumpMaxCount));
+			}
+		}
+
+		return bCanJump;
+	}
+	else
+	{
+		return true;
+	}
+	
+}
+
+
+void AOldHouseCharacter::OnWallGrabBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+                                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{	
+	if (GetCharacterMovement() != nullptr)
+	{
+		if(!GetCharacterMovement()->IsMovingOnGround())
+		{
+			GetCharacterMovement()->GravityScale = 0.f;
+			GetCharacterMovement()->Velocity = FVector(0,0,0);
+			GetCharacterMovement()->StopActiveMovement();
+			bIsHoldingWall = true;
+		}
+	}
+}
+
+void AOldHouseCharacter::OnWallGrabBoxEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (GetCharacterMovement() != nullptr)
+	{
+		GetCharacterMovement()->GravityScale = 2.f;
+		bIsHoldingWall = false;
+	}
+}
+
 void AOldHouseCharacter::MoveRight(float Value)
 {
 	/*UpdateChar();*/
@@ -356,16 +443,19 @@ void AOldHouseCharacter::UpdateCharacter()
 	// Now setup the rotation of the controller based on the direction we are travelling
 	const FVector PlayerVelocity = GetVelocity();	
 	float TravelDirection = PlayerVelocity.X;
-	// Set the rotation so that the character faces his direction of travel.
-	if (Controller != nullptr)
+	if(!bIsHoldingWall)
 	{
-		if (TravelDirection < 0.0f)
+		// Set the rotation so that the character faces his direction of travel.
+		if (Controller != nullptr)
 		{
-			Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-		}
-		else if (TravelDirection > 0.0f)
-		{
-			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+			if (TravelDirection < 0.0f)
+			{
+				Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+			}
+			else if (TravelDirection > 0.0f)
+			{
+				Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+			}
 		}
 	}
 }
