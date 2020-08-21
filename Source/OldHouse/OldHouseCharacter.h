@@ -11,6 +11,13 @@
 
 class UTextRenderComponent;
 
+UENUM(BlueprintType)
+enum class ETeam:uint8
+{
+	ET_Player UMETA(DisplayName = "Player"),
+	ET_Guards UMETA(DisplayName = "Guards")
+};
+
 /**
  * This class is the default character for OldHouse, and it is responsible for all
  * physical interaction between the player and the world.
@@ -64,6 +71,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	float PossesTime = 1.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	bool bControlledByPlayer = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Climbing)
 	bool bIsHoldingWall = false;
 	
@@ -108,6 +118,8 @@ protected:
 	void StopPossess();
 
 	virtual void OnUnPosses();
+
+	virtual void OnPosses();
 
 	virtual void BeginPlay() override;
 

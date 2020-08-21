@@ -18,4 +18,6 @@ class OLDHOUSE_API AAIHuman : public AOldHouseCharacter
 	virtual void OnUnPosses() override;
 
 	virtual bool CanBePossesed() override;
+
+	virtual void OnPosses() override;
 };

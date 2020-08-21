@@ -7,6 +7,7 @@
 
 void AAIHuman::OnUnPosses()
 {
+    Super::OnUnPosses();
     GetSprite()->SetFlipbook(UnPossesAnimation);
     GetSprite()->SetLooping(false);
     bDead = true;
@@ -15,4 +16,9 @@ void AAIHuman::OnUnPosses()
 bool AAIHuman::CanBePossesed()
 {
     return !bDead;
+}
+
+void AAIHuman::OnPosses()
+{
+    bControlledByPlayer = true;
 }

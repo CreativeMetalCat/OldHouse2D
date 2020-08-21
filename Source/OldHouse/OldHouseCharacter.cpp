@@ -225,6 +225,7 @@ void AOldHouseCharacter::Possess()
 						if(Other->CanBePossesed())
 						{
 							OnUnPosses();
+							Other->OnPosses();
 							PC->OnChangedBodies();
 							PC->Possess(Other);
 						}
@@ -266,7 +267,12 @@ void AOldHouseCharacter::StopPossess()
 
 void AOldHouseCharacter::OnUnPosses()
 {
-	
+	bControlledByPlayer = false;
+}
+
+void AOldHouseCharacter::OnPosses()
+{
+	bControlledByPlayer = true;
 }
 
 void AOldHouseCharacter::BeginPlay()
@@ -443,7 +449,7 @@ void AOldHouseCharacter::UpdateCharacter()
 	// Now setup the rotation of the controller based on the direction we are travelling
 	const FVector PlayerVelocity = GetVelocity();	
 	float TravelDirection = PlayerVelocity.X;
-	if(!bIsHoldingWall)
+	if(!bIsHoldingWall || !bControlledByPlayer)
 	{
 		// Set the rotation so that the character faces his direction of travel.
 		if (Controller != nullptr)
