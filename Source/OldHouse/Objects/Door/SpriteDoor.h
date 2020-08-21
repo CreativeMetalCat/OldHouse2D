@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class VICTOR_API ASpriteDoor : public ADoorBase
+class OLDHOUSE_API ASpriteDoor : public ADoorBase
 {
 	GENERATED_BODY()
 	public:

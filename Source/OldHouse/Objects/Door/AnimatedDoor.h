@@ -3,15 +3,42 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PaperFlipbookComponent.h"
 #include "OldHouse/Objects/DoorBase.h"
+#include "Paper2D/Classes/PaperFlipbook.h"
 #include "AnimatedDoor.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class VICTOR_API AAnimatedDoor : public ADoorBase
+class OLDHOUSE_API AAnimatedDoor : public ADoorBase
 {
 	GENERATED_BODY()
 	
+	protected:
+	FTimerHandle StopMoveAnimTimerHandle;
+
+	bool bIsMoving = false;
+	
+	public:
+	AAnimatedDoor();
+
+	UFUNCTION(BlueprintPure)
+	bool GetIsMoving() const { return bIsMoving; }
+	
+	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
+	UPaperFlipbookComponent* Sprite;
+
+	UPROPERTY(Category =Animations, VisibleAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* ClosedAnim;
+
+	UPROPERTY(Category =Animations, VisibleAnywhere, BlueprintReadWrite)
+	UPaperFlipbook* MoveAnim;
+
+	virtual void Toggle_Implementation() override;
+
+	virtual void OnMoveAnimStopped();
+
+	virtual bool CanBeToggled() override;
 };
