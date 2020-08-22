@@ -125,12 +125,8 @@ void AOldHouseCharacter::UpdateAnimation()
 {
 	if(!bDead && !bPlayingMeleeAttackAnim)
 	{
-		
-		const FVector PlayerVelocity = GetVelocity();
-		const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
-
 		// Are we moving or standing still?
-		UPaperFlipbook* DesiredAnimation = (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+		UPaperFlipbook* DesiredAnimation = GetDesiredAnimation(); 
 		if( GetSprite()->GetFlipbook() != DesiredAnimation 	)
 		{
 			GetSprite()->SetFlipbook(DesiredAnimation);
@@ -248,6 +244,35 @@ void AOldHouseCharacter::PickupItem()
 		DropItem();
 	}
 	
+}
+
+UPaperFlipbook* AOldHouseCharacter::GetDesiredAnimation()
+{
+	const FVector PlayerVelocity = GetVelocity();
+	const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
+	
+	if(Weapon != nullptr)
+	{
+		switch (Weapon->AnimType)
+		{
+		case EWeaponAnimType::EWT_Pistol:
+			return (PlayerSpeedSqr > 0.0f) ? PistolWalkAnimation : PistolIdleAnimation;
+			break;
+			
+		case EWeaponAnimType::EWT_MeleeKnife:
+			return (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+			break;
+			
+		default:
+			return (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+			break;
+		}
+	}
+	else
+	{
+		
+		return (PlayerSpeedSqr > 0.0f) ? RunningAnimation : IdleAnimation;
+	}
 }
 
 void AOldHouseCharacter::Attack()

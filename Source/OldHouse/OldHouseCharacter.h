@@ -69,6 +69,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	UPaperFlipbook* DeathAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations)
+	UPaperFlipbook* PistolIdleAnimation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations)
+	UPaperFlipbook* PistolWalkAnimation;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* UnPossesAnimation;
 
@@ -138,6 +144,10 @@ protected:
 	void PickupItem();
 	
 
+	UFUNCTION(BlueprintPure)
+	virtual UPaperFlipbook* GetDesiredAnimation();
+	
+	
 	virtual void Attack();
 
 	virtual void EndMeleeAttackAnim();

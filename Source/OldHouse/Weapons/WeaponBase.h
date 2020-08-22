@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WeaponAnimTypes.h"
 #include "WeaponBase.generated.h"
 
 UCLASS()
@@ -25,6 +26,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	float Damage = 10.f;
+
+	//this might be ignored by character. It's more of suggestion rather than demand
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	EWeaponAnimType AnimType = EWeaponAnimType::EWT_MeleeKnife;
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor*WeaponOwner;
