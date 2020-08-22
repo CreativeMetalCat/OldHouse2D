@@ -3,6 +3,7 @@
 
 #include "DoorBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "OldHouse/OldHouseCharacter.h"
 #include "OldHouse/PickupInterface.h"
 
 #include "PaperFlipbookComponent.h"
@@ -28,7 +29,7 @@ void ADoorBase::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ADoorBase::Toggle_Implementation()
+void ADoorBase::Toggle()
 {
 	if (bOpen)
 	{
@@ -46,6 +47,7 @@ void ADoorBase::Toggle_Implementation()
 		}
 		bOpen = true;
 	}
+	OnToggle();
 }
 
 // Called every frame
@@ -56,7 +58,12 @@ void ADoorBase::Tick(float DeltaTime)
 
 void ADoorBase::Interact_Implementation(AActor* interactor)
 {
-	if(CanBeToggled())
+	bool CanUse = true;
+	if(!bCanBeInteractedDirectly)
+	{
+		CanUse = (Cast<AOldHouseCharacter>(interactor) == nullptr);
+	}
+	if(CanBeToggled() && CanUse)
 	{
 		if (!bLocked)
 		{

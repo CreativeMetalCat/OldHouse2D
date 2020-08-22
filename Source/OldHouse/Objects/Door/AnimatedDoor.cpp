@@ -6,25 +6,25 @@
 AAnimatedDoor::AAnimatedDoor()
 {
     Sprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("Sprite"));
+    Sprite->SetupAttachment(RootComponent);
 }
 
-void AAnimatedDoor::Toggle_Implementation()
+void AAnimatedDoor::OnToggle()
 {
-    Super::Toggle();
-
-    if(bOpen)
+    if (Sprite != nullptr && MoveAnim != nullptr)
     {
         Sprite->SetLooping(false);
         Sprite->SetFlipbook(MoveAnim);
-        Sprite->PlayFromStart();
-        GetWorldTimerManager().SetTimer(StopMoveAnimTimerHandle,this,&AAnimatedDoor::OnMoveAnimStopped,Sprite->GetFlipbookLength());
-    }
-    else
-    {
-        Sprite->SetLooping(false);
-        Sprite->SetFlipbook(MoveAnim);
-        Sprite->ReverseFromEnd();
-        GetWorldTimerManager().SetTimer(StopMoveAnimTimerHandle,this,&AAnimatedDoor::OnMoveAnimStopped,Sprite->GetFlipbookLength());
+        bIsMoving = true;
+        GetWorldTimerManager().SetTimer(StopMoveAnimTimerHandle, this, &AAnimatedDoor::OnMoveAnimStopped,Sprite->GetFlipbookLength());
+        if (bOpen)
+        {
+            Sprite->PlayFromStart();
+        }
+        else
+        {
+            Sprite->ReverseFromEnd();
+        }
     }
 }
 

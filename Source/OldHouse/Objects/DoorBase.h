@@ -31,10 +31,14 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category=State)
 	bool bLocked = false;
 
-	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
-	void Toggle();
+	//can character use it directly or needs to use button
+	UPROPERTY(BlueprintReadWrite,EditAnywhere, Category=Interaction)
+	bool bCanBeInteractedDirectly = false;
 
-	virtual void Toggle_Implementation();
+	UFUNCTION(BlueprintCallable)
+	virtual void Toggle();
+	
+	virtual void OnToggle(){}
 
 	virtual bool CanBeToggled(){return true;}
 

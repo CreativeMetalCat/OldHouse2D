@@ -16,10 +16,8 @@ ASpriteDoor::ASpriteDoor()
     SpriteOpenedState->SetupAttachment((RootComponent));
 }
 
-void ASpriteDoor::Toggle_Implementation()
+void ASpriteDoor::OnToggle()
 {
-    Super::Toggle();
-    
     SpriteClosedState->SetVisibility(!bOpen);
     SpriteClosedState->SetCollisionEnabled(bOpen?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryOnly);
     SpriteOpenedState->SetVisibility(bOpen);

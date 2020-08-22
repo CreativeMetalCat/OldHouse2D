@@ -30,13 +30,13 @@ class OLDHOUSE_API AAnimatedDoor : public ADoorBase
 	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
 	UPaperFlipbookComponent* Sprite;
 
-	UPROPERTY(Category =Animations, VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category =Animations, EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* ClosedAnim;
 
-	UPROPERTY(Category =Animations, VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category =Animations, EditAnywhere, BlueprintReadWrite)
 	UPaperFlipbook* MoveAnim;
 
-	virtual void Toggle_Implementation() override;
+	virtual void OnToggle() override;
 
 	virtual void OnMoveAnimStopped();
 

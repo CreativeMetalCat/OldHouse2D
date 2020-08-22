@@ -22,5 +22,5 @@ class OLDHOUSE_API ASpriteDoor : public ADoorBase
 	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
 	UPaperSpriteComponent* SpriteClosedState;
 
-	virtual void Toggle_Implementation() override;
+	virtual void OnToggle() override;
 };
