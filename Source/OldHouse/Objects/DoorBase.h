@@ -34,19 +34,15 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void Toggle();
 
-	void Toggle_Implementation();
+	virtual void Toggle_Implementation();
+
+	virtual bool CanBeToggled(){return true;}
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
 	USceneComponent* Scene;
-	
-	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
-	UPaperSpriteComponent* SpriteOpenedState;
-
-	UPROPERTY(Category =Sprite, VisibleAnywhere, BlueprintReadWrite)
-	UPaperSpriteComponent* SpriteClosedState;
 
 	UPROPERTY(Category =Collision, VisibleAnywhere, BlueprintReadWrite)
 	UBoxComponent* CollisionBox;

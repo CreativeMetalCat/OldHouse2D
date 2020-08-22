@@ -7,7 +7,7 @@
 #include "ButtonBase.generated.h"
 
 UCLASS()
-class VICTOR_API AButtonBase : public AActor
+class OLDHOUSE_API AButtonBase : public AActor
 {
 	GENERATED_BODY()
 	

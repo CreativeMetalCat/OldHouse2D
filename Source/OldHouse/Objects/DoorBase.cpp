@@ -16,15 +16,6 @@ ADoorBase::ADoorBase()
 
 	Scene = CreateDefaultSubobject<USceneComponent>(TEXT("Scene"));
 	RootComponent = Scene;
-	SpriteClosedState = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("SpriteClosedState"));
-
-	SpriteOpenedState = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT(" SpriteOpenedState"));
-
-	SpriteClosedState->SetVisibility(!bOpen);
-	SpriteOpenedState->SetVisibility(bOpen);
-	
-	SpriteClosedState->SetupAttachment((RootComponent));
-	SpriteOpenedState->SetupAttachment((RootComponent));
 
 	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	CollisionBox->SetupAttachment((RootComponent));
@@ -55,10 +46,6 @@ void ADoorBase::Toggle_Implementation()
 		}
 		bOpen = true;
 	}
-	SpriteClosedState->SetVisibility(!bOpen);
-	SpriteClosedState->SetCollisionEnabled(bOpen?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryOnly);
-	SpriteOpenedState->SetVisibility(bOpen);
-	SpriteOpenedState->SetCollisionEnabled(!bOpen?ECollisionEnabled::NoCollision:ECollisionEnabled::QueryOnly);
 }
 
 // Called every frame
@@ -69,21 +56,24 @@ void ADoorBase::Tick(float DeltaTime)
 
 void ADoorBase::Interact_Implementation(AActor* interactor)
 {
-	if (!bLocked)
+	if(CanBeToggled())
 	{
-		Toggle();
-	}
-	else
-	{
-		if (interactor->Implements<UPickupInterface>() || (Cast<IPickupInterface>(interactor) != nullptr))
+		if (!bLocked)
 		{
-			if(IPickupInterface::Execute_HasKey(interactor, KeyId))
+			Toggle();
+		}
+		else
+		{
+			if (interactor->Implements<UPickupInterface>() || (Cast<IPickupInterface>(interactor) != nullptr))
 			{
-				bLocked = false;
-				IPickupInterface::Execute_RemoveKey(interactor,KeyId);
-				if (UnlockSound != nullptr)
+				if(IPickupInterface::Execute_HasKey(interactor, KeyId))
 				{
-					UGameplayStatics::PlaySoundAtLocation(GetWorld(), UnlockSound, GetActorLocation(), GetActorRotation());
+					bLocked = false;
+					IPickupInterface::Execute_RemoveKey(interactor,KeyId);
+					if (UnlockSound != nullptr)
+					{
+						UGameplayStatics::PlaySoundAtLocation(GetWorld(), UnlockSound, GetActorLocation(), GetActorRotation());
+					}
 				}
 			}
 		}
