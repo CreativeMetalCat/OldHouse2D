@@ -67,6 +67,9 @@ protected:
 	UPaperFlipbook* StabAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPaperFlipbook* DeathAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* UnPossesAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
@@ -78,11 +81,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death)
 	bool bDead = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death)
+	USoundBase* DeathSound;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	float PossesTime = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Weapon)
-	AWeaponBase* Weapon;
+	AWeaponBase* Weapon;	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=WeaponAnims)
 	bool bPlayingMeleeAttackAnim = false;
@@ -119,10 +125,13 @@ protected:
 	// End of APawn interface
 
 
+	UFUNCTION(BLueprintPure)
 	virtual bool CanBePossesed(){return true;}
 	
 	void Interact();
-	
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Die();
 
 	void DropItem();
 

@@ -183,6 +183,27 @@ void AOldHouseCharacter::Interact()
 	}
 }
 
+void AOldHouseCharacter::Die()
+{
+	if (!bDead)
+	{
+		bDead = true;
+		if (DeathAnimation != nullptr)
+		{
+			GetSprite()->SetFlipbook(DeathAnimation);
+			GetSprite()->SetLooping(false);
+		}
+		if (DeathSound != nullptr)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation(), GetActorRotation());
+		}
+		if (GetController() != nullptr)
+		{
+			GetController()->UnPossess();
+		}
+	}
+}
+
 void AOldHouseCharacter::DropItem()
 {
 	if (CurrentlyHeldActor != nullptr)
@@ -341,7 +362,7 @@ void AOldHouseCharacter::BeginPlay()
 float AOldHouseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
 	AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,FString::FromInt(DamageAmount));
+	if(!bDead){Die();}
 	return DamageAmount;
 }
 
