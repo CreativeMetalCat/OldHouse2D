@@ -16,9 +16,7 @@ AHumanAIBase::AHumanAIBase()
 
 ETeamAttitude::Type AHumanAIBase::GetTeamAttitudeTowards(const AActor& Other) const
 {
-    GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Orange,Other.GetName());
-    //for now system only cares about old house characters
-    if(Cast<AOldHouseCharacter>(&Other)!=nullptr)
+    if (Other.Tags.Find("Player") != -1)
     {
         return ETeamAttitude::Type::Hostile;
     }

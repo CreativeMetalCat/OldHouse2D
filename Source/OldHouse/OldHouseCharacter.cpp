@@ -199,7 +199,15 @@ void AOldHouseCharacter::Die()
 		}
 		if (GetController() != nullptr)
 		{
-			GetController()->UnPossess();
+			if(Cast<APlayerController>(GetController()) == nullptr)
+			{
+				GetController()->UnPossess();
+			}
+		}
+		if(Weapon != nullptr)
+		{
+			Weapon->Destroy();
+			Weapon = nullptr;
 		}
 	}
 }
@@ -507,8 +515,11 @@ void AOldHouseCharacter::MoveRight(float Value)
 {
 	/*UpdateChar();*/
 
-	// Apply the input to the character motion
-	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	if(!bPlayingMeleeAttackAnim)
+	{
+		// Apply the input to the character motion
+		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+	}
 }
 
 void AOldHouseCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
