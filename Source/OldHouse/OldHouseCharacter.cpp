@@ -12,6 +12,7 @@
 #include "Camera/CameraComponent.h"
 #include "Player/PossesivePlayerController.h"
 #include "Engine.h"
+#include "Weapons/KnifeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(SideScrollerCharacter, Log, All);
 
@@ -69,7 +70,7 @@ AOldHouseCharacter::AOldHouseCharacter()
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->SetPlaneConstraintNormal(FVector(0.0f, -1.0f, 0.0f));
 
-	// Behave like a traditional 2D platformer character, with a flat bottom instead of a curved capsule bottom
+	// Behave like a traditional 2D Splatformer character, with a flat bottom instead of a curved capsule bottom
 	// Note: This can cause a little floating when going up inclines; you can choose the tradeoff between better
 	// behavior on the edge of a ledge versus inclines by setting this to true or false
 	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
@@ -108,10 +109,23 @@ void AOldHouseCharacter::HoldObject(AHoldableActor* object)
 	}	
 }
 
+bool AOldHouseCharacter::SetWeapon(TSubclassOf<AWeaponBase> WeaponClass)
+{
+	Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
+	if(Weapon != nullptr)
+	{
+		Weapon->AttachToComponent(GetSprite(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("WeaponHolding"));
+		Weapon->WeaponOwner = this;
+		return true;
+	}
+	return false;
+}
+
 void AOldHouseCharacter::UpdateAnimation()
 {
-	if(!bDead)
+	if(!bDead && !bPlayingMeleeAttackAnim)
 	{
+		
 		const FVector PlayerVelocity = GetVelocity();
 		const float PlayerSpeedSqr = PlayerVelocity.SizeSquared();
 
@@ -121,6 +135,7 @@ void AOldHouseCharacter::UpdateAnimation()
 		{
 			GetSprite()->SetFlipbook(DesiredAnimation);
 		}
+		if (!GetSprite()->IsLooping()) { GetSprite()->SetLooping(true); GetSprite()->PlayFromStart(); }
 	}
 }
 
@@ -148,6 +163,8 @@ void AOldHouseCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Possess",IE_Released,this,&AOldHouseCharacter::StopPossess);
 
 	PlayerInputComponent->BindAction("DropItem",IE_Pressed,this,&AOldHouseCharacter::PickupItem);
+	
+	PlayerInputComponent->BindAction("Attack",IE_Pressed,this,&AOldHouseCharacter::Attack);
 }
 
 void AOldHouseCharacter::Interact()
@@ -202,6 +219,43 @@ void AOldHouseCharacter::PickupItem()
 		DropItem();
 	}
 	
+}
+
+void AOldHouseCharacter::Attack()
+{
+	if(Weapon != nullptr)
+	{
+		if(Cast<AKnifeBase>(Weapon) != nullptr)
+		{
+			if(StabAnimation != nullptr)
+			{
+				GetSprite()->SetLooping(false);
+				bPlayingMeleeAttackAnim = true;
+				GetSprite()->SetFlipbook(StabAnimation);
+				GetSprite()->PlayFromStart();
+				GetWorldTimerManager().SetTimer(EndMeleeAttackAnimTimerHandle,this,&AOldHouseCharacter::EndMeleeAttackAnim,GetSprite()->GetFlipbookLength());
+			}
+			else
+			{
+				Cast<AKnifeBase>(Weapon)->DealDamage();
+			}		
+		}
+	}
+}
+
+void AOldHouseCharacter::EndMeleeAttackAnim()
+{
+	if(StabAnimation != nullptr)
+	{
+		Cast<AKnifeBase>(Weapon)->DealDamage();
+		GetSprite()->ReverseFromEnd();
+		GetWorldTimerManager().SetTimer(FinishAttackAnimTimerHandle,this,&AOldHouseCharacter::FinishMeleeAttack,GetSprite()->GetFlipbookLength());
+	}
+}
+
+void AOldHouseCharacter::FinishMeleeAttack()
+{
+	bPlayingMeleeAttackAnim = false;
 }
 
 void AOldHouseCharacter::Possess()
@@ -282,6 +336,13 @@ void AOldHouseCharacter::BeginPlay()
 	WallGrabBox->OnComponentBeginOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxBeginOverlap);
 
 	WallGrabBox->OnComponentEndOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxEndOverlap);
+}
+
+float AOldHouseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
+{
+	GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,FString::FromInt(DamageAmount));
+	return DamageAmount;
 }
 
 bool AOldHouseCharacter::PickupItem_Implementation(FItemData item)
@@ -457,10 +518,24 @@ void AOldHouseCharacter::UpdateCharacter()
 			if (TravelDirection < 0.0f)
 			{
 				Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+				if(Weapon != nullptr)
+				{
+					if(Weapon->GetActorLocation().Y!=GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y+0.02)
+					{
+						Weapon->SetActorLocation(FVector(GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).X,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y + 0.02, GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Z));						
+					}
+				}
 			}
 			else if (TravelDirection > 0.0f)
 			{
 				Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+				if(Weapon != nullptr)
+				{
+					if(Weapon->GetActorLocation().Y!=GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y)
+					{
+						Weapon->SetActorLocation(FVector(GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).X,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Z));						
+					}
+				}
 			}
 		}
 	}

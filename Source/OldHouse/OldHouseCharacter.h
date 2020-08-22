@@ -7,6 +7,7 @@
 #include "Objects/ItemData.h"
 #include "PickupInterface.h"
 #include "Objects/Hold/HoldableActor.h"
+#include "Weapons/WeaponBase.h"
 #include "OldHouseCharacter.generated.h"
 
 class UTextRenderComponent;
@@ -44,6 +45,12 @@ class AOldHouseCharacter : public APaperCharacter,public IPickupInterface
 protected:
 
 	FTimerHandle StartPossesingTimerHandle;
+
+	FTimerHandle FinishAttackAnimTimerHandle;
+
+	FTimerHandle MeleeDealDamageTimerHandle;
+
+	FTimerHandle EndMeleeAttackAnimTimerHandle;
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
@@ -55,6 +62,9 @@ protected:
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPaperFlipbook* StabAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* UnPossesAnimation;
@@ -71,6 +81,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	float PossesTime = 1.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Weapon)
+	AWeaponBase* Weapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=WeaponAnims)
+	bool bPlayingMeleeAttackAnim = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	bool bControlledByPlayer = false;
 
@@ -80,6 +96,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void HoldObject(AHoldableActor*object);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual bool SetWeapon(TSubclassOf<AWeaponBase>WeaponClass);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
@@ -108,7 +127,13 @@ protected:
 	void DropItem();
 
 	void PickupItem();
+	
 
+	virtual void Attack();
+
+	virtual void EndMeleeAttackAnim();
+	
+	virtual void FinishMeleeAttack();
 	
 	
 	void Possess();
@@ -116,12 +141,17 @@ protected:
 	void StartPossess();
 
 	void StopPossess();
+	
 
 	virtual void OnUnPosses();
 
 	virtual void OnPosses();
+	
 
 	virtual void BeginPlay() override;
+
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
 
 	virtual bool PickupItem_Implementation(FItemData item) override;
 
@@ -132,6 +162,7 @@ protected:
 	virtual bool HasKey_Implementation(int keyId) override;
 
 	virtual void RemoveKey_Implementation(int keyId) override;
+	
 
 	virtual bool CanJumpInternal_Implementation() const override;
 
