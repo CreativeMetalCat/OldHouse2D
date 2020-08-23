@@ -14,6 +14,8 @@ UCLASS()
 class OLDHOUSE_API AHumanAIBase : public AAIController
 {
 	GENERATED_BODY()
+	protected:
+	FTimerHandle UpdateTimerHandle;
 	public:
 	AHumanAIBase();
 	
@@ -23,6 +25,9 @@ class OLDHOUSE_API AHumanAIBase : public AAIController
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBehaviorTree* BehaviorTree;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool bCanSeeEnemy = false;
+	
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 	virtual void Tick(float DeltaSeconds) override;
@@ -31,4 +36,6 @@ class OLDHOUSE_API AHumanAIBase : public AAIController
 	virtual void UpdatedSeenActors(const TArray<AActor*>& actors);
 
 	virtual void BeginPlay() override;
+
+	virtual void UpdatePerceivedActors();
 };

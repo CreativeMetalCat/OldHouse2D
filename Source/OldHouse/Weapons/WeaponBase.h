@@ -21,6 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FTimerHandle CooldownTimerHandle;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,10 +36,24 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor*WeaponOwner;
 
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Cooldown)
+	float CooldownTime = 0.f;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Cooldown)
+	bool bIsCoolingDown = false;
+
+	UFUNCTION(BlueprintPure)
+	virtual bool CanShoot();
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
 	USoundBase* FireSound;
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool Fire(FVector Location,FRotator Rotaion);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnCooldownEnd();
+
+	UFUNCTION(BlueprintCallable)
+	void StartCooldownTimer();
 };

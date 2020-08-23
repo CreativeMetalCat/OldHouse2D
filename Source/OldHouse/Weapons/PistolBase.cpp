@@ -12,34 +12,45 @@ APistolBase::APistolBase()
     RootComponent = Sprite;
 
     AnimType = EWeaponAnimType::EWT_Pistol;
+
+    CooldownTime = 1.f;
 }
 
 bool APistolBase::Fire(FVector Location,FRotator Rotaion)
 {
-    if (GetWorld() != nullptr)
+    if(CanShoot())
     {
-        ABulletBase* bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Location, Rotaion);
-        if (bullet != nullptr)
+        if (GetWorld() != nullptr)
         {
-          
-            bullet->WeaponOwner = WeaponOwner;
-            //shot by player
-            if(WeaponOwner->Tags.Find("Player")!=-1)
+            ABulletBase* bullet = GetWorld()->SpawnActor<ABulletBase>(BulletClass, Location, Rotaion);
+            if (bullet != nullptr)
             {
-                bullet->Tags.Add("ShotByPlayer");
+          
+                bullet->WeaponOwner = WeaponOwner;
+                //shot by player
+                if(WeaponOwner->Tags.Find("Player")!=-1)
+                {
+                    bullet->Tags.Add("ShotByPlayer");
+                }
+                else
+                {
+                    bullet->Tags.Add("ShotByEnemy");
+                }
+                bullet->SetOwner(WeaponOwner);
+                bullet->Collision->MoveIgnoreActors.Add(WeaponOwner);                
             }
             else
             {
-                bullet->Tags.Add("ShotByEnemy");
+                return false;
             }
-            bullet->SetOwner(WeaponOwner);
-            bullet->Collision->MoveIgnoreActors.Add(WeaponOwner);
-        }
 
-        if (FireSound != nullptr)
-        {
-            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, Location, Rotaion);
+            if (FireSound != nullptr)
+            {
+                UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, Location, Rotaion);
+            }
+            StartCooldownTimer();
+            return true;
         }
     }
-    return true;
+    return false;
 }

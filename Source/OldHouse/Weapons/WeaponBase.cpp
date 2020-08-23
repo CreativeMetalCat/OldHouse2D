@@ -25,12 +25,35 @@ void AWeaponBase::Tick(float DeltaTime)
 
 }
 
+bool AWeaponBase::CanShoot()
+{
+	return  !bIsCoolingDown;
+}
+
 bool AWeaponBase::Fire(FVector Location,FRotator Rotaion)
 {
-	if (FireSound != nullptr)
+	if(CanShoot())
 	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, Location, Rotaion);
+		if (FireSound != nullptr)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, Location, Rotaion);
+		}
+		StartCooldownTimer();
 	}
 	return false;
+}
+
+void AWeaponBase::OnCooldownEnd()
+{
+	bIsCoolingDown = false;
+}
+
+void AWeaponBase::StartCooldownTimer()
+{
+	if(CooldownTime>0.f)
+	{
+		bIsCoolingDown = true;
+		GetWorldTimerManager().SetTimer(CooldownTimerHandle,this,&AWeaponBase::OnCooldownEnd,CooldownTime);
+	}
 }
 

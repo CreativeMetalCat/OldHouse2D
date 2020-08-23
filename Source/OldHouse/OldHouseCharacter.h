@@ -99,6 +99,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=WeaponAnims)
 	bool bPlayingMeleeAttackAnim = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=HiddenInShadow)
+	bool bHiddenInShadow = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	bool bControlledByPlayer = false;
 
@@ -133,6 +136,9 @@ public:
 
 	UFUNCTION(BLueprintPure)
 	virtual bool CanBePossesed(){return true;}
+
+	UFUNCTION(BLueprintPure)
+	virtual bool CanBeSeen();
 	
 	void Interact();
 

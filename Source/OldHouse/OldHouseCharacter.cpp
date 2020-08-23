@@ -163,6 +163,11 @@ void AOldHouseCharacter::SetupPlayerInputComponent(class UInputComponent* Player
 	PlayerInputComponent->BindAction("Attack",IE_Pressed,this,&AOldHouseCharacter::Attack);
 }
 
+bool AOldHouseCharacter::CanBeSeen()
+{
+	return !(bDead || bHiddenInShadow);
+}
+
 void AOldHouseCharacter::Interact()
 {
 	TArray<AActor*> actors;
@@ -183,6 +188,11 @@ void AOldHouseCharacter::Die()
 {
 	if (!bDead)
 	{
+		APossesivePlayerController*PC = Cast<APossesivePlayerController>(GetController());
+		if ( PC != nullptr)
+		{
+			DisableInput(PC);
+		}
 		bDead = true;
 		if (DeathAnimation != nullptr)
 		{
@@ -323,18 +333,21 @@ void AOldHouseCharacter::Attack()
 	{
 		if(Cast<AKnifeBase>(Weapon) != nullptr)
 		{
-			if(StabAnimation != nullptr)
+			if(!EndMeleeAttackAnimTimerHandle.IsValid())
 			{
-				GetSprite()->SetLooping(false);
-				bPlayingMeleeAttackAnim = true;
-				GetSprite()->SetFlipbook(StabAnimation);
-				GetSprite()->PlayFromStart();
-				GetWorldTimerManager().SetTimer(EndMeleeAttackAnimTimerHandle,this,&AOldHouseCharacter::EndMeleeAttackAnim,GetSprite()->GetFlipbookLength());
+				if(StabAnimation != nullptr)
+				{
+					GetSprite()->SetLooping(false);
+					bPlayingMeleeAttackAnim = true;
+					GetSprite()->SetFlipbook(StabAnimation);
+					GetSprite()->PlayFromStart();
+					GetWorldTimerManager().SetTimer(EndMeleeAttackAnimTimerHandle,this,&AOldHouseCharacter::EndMeleeAttackAnim,GetSprite()->GetFlipbookLength());
+				}
+				else
+				{
+					Cast<AKnifeBase>(Weapon)->DealDamage();
+				}
 			}
-			else
-			{
-				Cast<AKnifeBase>(Weapon)->DealDamage();
-			}		
 		}
 		else
 		{
@@ -345,6 +358,7 @@ void AOldHouseCharacter::Attack()
 
 void AOldHouseCharacter::EndMeleeAttackAnim()
 {
+	GetWorldTimerManager().ClearTimer(EndMeleeAttackAnimTimerHandle);
 	if(StabAnimation != nullptr)
 	{
 		Cast<AKnifeBase>(Weapon)->DealDamage();

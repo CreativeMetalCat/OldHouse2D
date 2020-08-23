@@ -29,30 +29,26 @@ ETeamAttitude::Type AHumanAIBase::GetTeamAttitudeTowards(const AActor& Other) co
 void AHumanAIBase::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
     
+    UpdatePerceivedActors();
+    
+    if (bCanSeeEnemy)
+    {
+        if (GetPawn() != nullptr)
+        {
+            AOldHouseCharacter* human = Cast<AOldHouseCharacter>(GetPawn());
+            if (human != nullptr)
+            {
+                human->Attack();
+            }
+        }
+    }
 }
 
 void AHumanAIBase::UpdatedSeenActors(const TArray<AActor*>& actors)
 {
-    if (GetBlackboardComponent() != nullptr)
-    {
-        bool bSeenEnemy = false;
-        bool bCanSeeEnemy = false;
-        if (GetBlackboardComponent()->GetValueAsObject(FName("Target")) != nullptr)
-        {
-            bSeenEnemy = true;
-            bCanSeeEnemy = (actors.Find(Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(FName("Target")))) != -1);
-        }
-        if (actors.Num() > 0 && !bCanSeeEnemy)
-        {
-            GetBlackboardComponent()->SetValueAsObject(FName("Target"),actors[0]);
-            
-            for (int i = 0; i < actors.Num(); i++)
-            {
-                
-            }
-        }
-    }
+    
 }
 
 void AHumanAIBase::BeginPlay()
@@ -67,4 +63,60 @@ void AHumanAIBase::BeginPlay()
     {
         RunBehaviorTree(BehaviorTree);
     }
+
+    GetWorldTimerManager().SetTimer(UpdateTimerHandle,this,&AHumanAIBase::UpdatePerceivedActors,1.f,true);
 }
+
+void AHumanAIBase::UpdatePerceivedActors()
+{
+    TArray<AActor*>actors;
+    Senses->GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(),actors);
+    if (GetBlackboardComponent() != nullptr)
+    {
+        bool bSeenEnemy = false;
+        if (GetBlackboardComponent()->GetValueAsObject(FName("Target")) != nullptr)
+        {
+            bSeenEnemy = true;
+            AOldHouseCharacter*human = Cast<AOldHouseCharacter>(GetBlackboardComponent()->GetValueAsObject(FName("Target")));
+            if(human != nullptr)
+            {
+                bCanSeeEnemy = (actors.Find(Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(FName("Target")))) != INDEX_NONE) && human->CanBeSeen();
+            }
+            else
+            {
+                bCanSeeEnemy = (actors.Find(Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(FName("Target")))) != INDEX_NONE);
+            }
+            if(!bCanSeeEnemy)
+            {
+                GetBlackboardComponent()->ClearValue(FName("Target"));
+            }
+        }
+        if (actors.Num() > 0 && !bCanSeeEnemy)
+        {
+            for (int i = 0; i < actors.Num(); i++)
+            {
+                if(actors[i]->Tags.Find("Player") != -1)
+                {
+                    AOldHouseCharacter*human = Cast<AOldHouseCharacter>(actors[i]);
+                    if(human != nullptr)
+                    {
+                        if(human->CanBeSeen())
+                        {
+                            GetBlackboardComponent()->SetValueAsObject(FName("Target"), actors[i]);
+                            bCanSeeEnemy = true;
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        GetBlackboardComponent()->SetValueAsObject(FName("Target"), actors[i]);
+                        bCanSeeEnemy = true;
+                        return;
+                    }
+                }
+            }
+        }
+        
+    }
+}
+
