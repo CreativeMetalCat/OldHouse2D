@@ -2,6 +2,7 @@
 
 
 #include "WeaponBase.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -15,11 +16,6 @@ AWeaponBase::AWeaponBase()
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if(WeaponOwner == nullptr)
-	{
-		WeaponOwner = GetOwner();
-	}
 }
 
 // Called every frame
@@ -27,5 +23,14 @@ void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+bool AWeaponBase::Fire(FVector Location,FRotator Rotaion)
+{
+	if (FireSound != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), FireSound, Location, Rotaion);
+	}
+	return false;
 }
 

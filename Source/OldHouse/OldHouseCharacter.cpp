@@ -114,7 +114,7 @@ bool AOldHouseCharacter::SetWeapon(TSubclassOf<AWeaponBase> WeaponClass)
 	Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
 	if(Weapon != nullptr)
 	{
-		Weapon->AttachToComponent(GetSprite(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,TEXT("WeaponHolding"));
+		Weapon->AttachToComponent(GetSprite(),FAttachmentTransformRules::SnapToTargetNotIncludingScale, GetWeaponAttachmentSocketName(Weapon->AnimType));
 		Weapon->WeaponOwner = this;
 		return true;
 	}
@@ -275,6 +275,48 @@ UPaperFlipbook* AOldHouseCharacter::GetDesiredAnimation()
 	}
 }
 
+FVector AOldHouseCharacter::GetWeaponSocketLocation() const
+{
+	if(Weapon != nullptr)
+	{
+		return GetSprite()->GetSocketLocation(GetWeaponAttachmentSocketName(Weapon->AnimType));
+	}
+	else
+	{
+		return GetSprite()->GetSocketLocation(TEXT("WeaponHolding"));
+	}
+}
+
+FRotator AOldHouseCharacter::GetWeaponSocketRotation() const
+{
+	if(Weapon != nullptr)
+	{
+		return GetSprite()->GetSocketRotation(GetWeaponAttachmentSocketName(Weapon->AnimType));
+	}
+	else
+	{
+		return GetSprite()->GetSocketRotation(TEXT("WeaponHolding"));
+	}
+}
+
+FName AOldHouseCharacter::GetWeaponAttachmentSocketName(EWeaponAnimType animType)const
+{
+	switch (animType)
+	{
+	case EWeaponAnimType::EWT_Pistol:
+		return TEXT("PistolHolding");
+		break;
+	case EWeaponAnimType::EWT_MeleeKnife:
+		return TEXT("WeaponHolding");
+		break;
+	default:
+		return TEXT("WeaponHolding");
+		break;
+	}
+}
+
+
+
 void AOldHouseCharacter::Attack()
 {
 	if(Weapon != nullptr)
@@ -293,6 +335,10 @@ void AOldHouseCharacter::Attack()
 			{
 				Cast<AKnifeBase>(Weapon)->DealDamage();
 			}		
+		}
+		else
+		{
+			Weapon->Fire(GetWeaponSocketLocation(),GetWeaponSocketRotation());
 		}
 	}
 }
@@ -577,9 +623,9 @@ void AOldHouseCharacter::UpdateCharacter()
 				Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
 				if(Weapon != nullptr)
 				{
-					if(Weapon->GetActorLocation().Y!=GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y+0.02)
+					if(Weapon->GetActorLocation().Y!=GetWeaponSocketLocation().Y+0.02)
 					{
-						Weapon->SetActorLocation(FVector(GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).X,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y + 0.02, GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Z));						
+						Weapon->SetActorLocation(FVector(GetWeaponSocketLocation().X,GetWeaponSocketLocation().Y + 0.02, GetWeaponSocketLocation().Z));						
 					}
 				}
 			}
@@ -588,9 +634,9 @@ void AOldHouseCharacter::UpdateCharacter()
 				Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 				if(Weapon != nullptr)
 				{
-					if(Weapon->GetActorLocation().Y!=GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y)
+					if(Weapon->GetActorLocation().Y!=GetSprite()->GetSocketLocation(GetWeaponAttachmentSocketName(Weapon->AnimType)).Y)
 					{
-						Weapon->SetActorLocation(FVector(GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).X,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Y,GetSprite()->GetSocketLocation(TEXT("WeaponHolding")).Z));						
+						Weapon->SetActorLocation(GetWeaponSocketLocation());						
 					}
 				}
 			}

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "OldHouse/Weapons/WeaponBase.h"
 #include "PaperSpriteComponent.h"
+#include "Projectiles/BulletBase.h"
 #include "PistolBase.generated.h"
 
 /**
@@ -20,4 +21,9 @@ class OLDHOUSE_API APistolBase : public AWeaponBase
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UPaperSpriteComponent* Sprite;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TSubclassOf<ABulletBase> BulletClass;
+
+	virtual bool Fire(FVector Location,FRotator Rotaion) override;
 };

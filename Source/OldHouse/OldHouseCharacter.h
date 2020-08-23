@@ -58,7 +58,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBoxComponent* WallGrabBox;
-	
+public:
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
@@ -146,6 +146,15 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	virtual UPaperFlipbook* GetDesiredAnimation();
+
+	UFUNCTION(BlueprintPure)
+	FVector GetWeaponSocketLocation()const;
+
+	UFUNCTION(BlueprintPure)
+	FName GetWeaponAttachmentSocketName(EWeaponAnimType animType)const;
+
+	UFUNCTION(BlueprintPure)
+    FRotator GetWeaponSocketRotation()const;
 	
 	
 	virtual void Attack();

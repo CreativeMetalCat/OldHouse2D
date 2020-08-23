@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "WeaponAnimTypes.h"
+
 #include "WeaponBase.generated.h"
 
 UCLASS()
@@ -33,4 +34,11 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	AActor*WeaponOwner;
+
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
+	USoundBase* FireSound;
+
+	UFUNCTION(BlueprintCallable)
+	virtual bool Fire(FVector Location,FRotator Rotaion);
 };
