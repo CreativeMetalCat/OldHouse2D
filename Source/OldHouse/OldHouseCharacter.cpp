@@ -400,39 +400,49 @@ void AOldHouseCharacter::Possess()
 		APossesivePlayerController*PC = Cast<APossesivePlayerController>(GetController());
 		if ( PC != nullptr)
 		{
-			GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Shooting line");
-			FHitResult hit;
-			PC->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery2,false,hit);
-			if(hit.bBlockingHit)
+			if(OriginalBody != nullptr && OriginalBody->Tags.Find("Player") != -1)
 			{
-				if(hit.Actor != nullptr)
+				OnUnPosses();
+				OriginalBody->OnPosses(this);
+				PC->OnChangedBodies();
+				PC->Possess(OriginalBody);
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Shooting line");
+				FHitResult hit;
+				PC->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery2,false,hit);
+				if(hit.bBlockingHit)
 				{
-					AOldHouseCharacter* Other = Cast<AOldHouseCharacter>(hit.GetActor());
-					if(Other!=nullptr)
+					if(hit.Actor != nullptr)
 					{
-						if(Other->CanBePossesed())
+						AOldHouseCharacter* Other = Cast<AOldHouseCharacter>(hit.GetActor());
+						if(Other!=nullptr)
 						{
-							OnUnPosses();
-							Other->OnPosses();
-							PC->OnChangedBodies();
-							PC->Possess(Other);
+							if(Other->CanBePossesed())
+							{
+								OnUnPosses();
+								Other->OnPosses(this);
+								PC->OnChangedBodies();
+								PC->Possess(Other);
+							}
+						}
+						else
+						{
+							GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Yellow,"Actor is not possesable. Actor name: " + hit.GetActor()->GetName());
+						
 						}
 					}
 					else
 					{
-						GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Yellow,"Actor is not possesable. Actor name: " + hit.GetActor()->GetName());
-						
+						GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Hit but found no actor");
 					}
 				}
 				else
 				{
-					GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Emerald,"Hit but found no actor");
+					GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,"Didn't hit");
+					GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,hit.TraceStart.ToString());
 				}
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,"Didn't hit");
-				GEngine->AddOnScreenDebugMessage(-1,5.f,FColor::Red,hit.TraceStart.ToString());
 			}
 		}
 	}
@@ -458,8 +468,9 @@ void AOldHouseCharacter::OnUnPosses()
 	bControlledByPlayer = false;
 }
 
-void AOldHouseCharacter::OnPosses()
+void AOldHouseCharacter::OnPosses(AOldHouseCharacter*originalBody)
 {
+	OriginalBody = originalBody;
 	bControlledByPlayer = true;
 }
 

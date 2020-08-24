@@ -18,7 +18,8 @@ bool AAIHuman::CanBePossesed()
     return !bDead;
 }
 
-void AAIHuman::OnPosses()
+void AAIHuman::OnPosses(AOldHouseCharacter*originalBody)
 {
+    OriginalBody = originalBody;
     bControlledByPlayer = true;
 }

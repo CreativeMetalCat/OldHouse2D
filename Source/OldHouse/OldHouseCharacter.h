@@ -104,6 +104,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
 	bool bControlledByPlayer = false;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	AOldHouseCharacter*OriginalBody = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Climbing)
 	bool bIsHoldingWall = false;
@@ -182,7 +185,7 @@ public:
 
 	virtual void OnUnPosses();
 
-	virtual void OnPosses();
+	virtual void OnPosses(AOldHouseCharacter*originalBody);
 	
 
 	virtual void BeginPlay() override;
