@@ -54,3 +54,15 @@ bool APistolBase::Fire(FVector Location,FRotator Rotaion)
     }
     return false;
 }
+
+void APistolBase::SetHiddenInShadow(bool Hidden)
+{
+    if(Hidden)
+    {
+        Sprite->SetSpriteColor(FColor::Black);
+    }
+    else
+    {
+        Sprite->SetSpriteColor(FColor::White);
+    }
+}

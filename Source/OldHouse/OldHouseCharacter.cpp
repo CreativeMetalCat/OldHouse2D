@@ -218,6 +218,23 @@ void AOldHouseCharacter::Die()
 	}
 }
 
+void AOldHouseCharacter::SetHiddenInTheShadow(bool Hidden)
+{
+	bHiddenInShadow = Hidden;
+	if (Weapon != nullptr)
+	{
+		Weapon->SetHiddenInShadow(Hidden);
+	}
+	if (Hidden)
+	{
+		GetSprite()->SetSpriteColor(FColor::Black);
+	}
+	else
+	{
+		GetSprite()->SetSpriteColor(FColor::White);
+	}
+}
+
 void AOldHouseCharacter::DropItem()
 {
 	if (CurrentlyHeldActor != nullptr)
@@ -329,29 +346,32 @@ FName AOldHouseCharacter::GetWeaponAttachmentSocketName(EWeaponAnimType animType
 
 void AOldHouseCharacter::Attack()
 {
-	if(Weapon != nullptr)
+	if(!bHiddenInShadow)
 	{
-		if(Cast<AKnifeBase>(Weapon) != nullptr)
+		if(Weapon != nullptr)
 		{
-			if(!EndMeleeAttackAnimTimerHandle.IsValid())
+			if(Cast<AKnifeBase>(Weapon) != nullptr)
 			{
-				if(StabAnimation != nullptr)
+				if(!EndMeleeAttackAnimTimerHandle.IsValid())
 				{
-					GetSprite()->SetLooping(false);
-					bPlayingMeleeAttackAnim = true;
-					GetSprite()->SetFlipbook(StabAnimation);
-					GetSprite()->PlayFromStart();
-					GetWorldTimerManager().SetTimer(EndMeleeAttackAnimTimerHandle,this,&AOldHouseCharacter::EndMeleeAttackAnim,GetSprite()->GetFlipbookLength());
-				}
-				else
-				{
-					Cast<AKnifeBase>(Weapon)->DealDamage();
+					if(StabAnimation != nullptr)
+					{
+						GetSprite()->SetLooping(false);
+						bPlayingMeleeAttackAnim = true;
+						GetSprite()->SetFlipbook(StabAnimation);
+						GetSprite()->PlayFromStart();
+						GetWorldTimerManager().SetTimer(EndMeleeAttackAnimTimerHandle,this,&AOldHouseCharacter::EndMeleeAttackAnim,GetSprite()->GetFlipbookLength());
+					}
+					else
+					{
+						Cast<AKnifeBase>(Weapon)->DealDamage();
+					}
 				}
 			}
-		}
-		else
-		{
-			Weapon->Fire(GetWeaponSocketLocation(),GetWeaponSocketRotation());
+			else
+			{
+				Weapon->Fire(GetWeaponSocketLocation(),GetWeaponSocketRotation());
+			}
 		}
 	}
 }
@@ -528,7 +548,8 @@ void AOldHouseCharacter::RemoveKey_Implementation(int keyId)
 
 bool AOldHouseCharacter::CanJumpInternal_Implementation() const
 {
-	if(!bIsHoldingWall)
+	if (bHiddenInShadow) { return false; }
+	if(!bIsHoldingWall )
 	{
 		
 		// Ensure the character isn't currently crouched.
@@ -600,7 +621,7 @@ void AOldHouseCharacter::MoveRight(float Value)
 {
 	/*UpdateChar();*/
 
-	if(!bPlayingMeleeAttackAnim)
+	if(!bPlayingMeleeAttackAnim && !bHiddenInShadow)
 	{
 		// Apply the input to the character motion
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);

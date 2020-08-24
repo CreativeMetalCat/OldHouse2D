@@ -145,6 +145,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Die();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void SetHiddenInTheShadow(bool Hidden);
+
 	void DropItem();
 
 	void PickupItem();

@@ -56,4 +56,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StartCooldownTimer();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetHiddenInShadow(bool Hidden){}
 };

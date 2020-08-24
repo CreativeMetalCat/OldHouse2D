@@ -33,3 +33,15 @@ void AKnifeBase::DealDamage()
         }
     }
 }
+
+void AKnifeBase::SetHiddenInShadow(bool Hidden)
+{
+    if(Hidden)
+    {
+        Sprite->SetSpriteColor(FColor::Black);
+    }
+    else
+    {
+        Sprite->SetSpriteColor(FColor::White);
+    }
+}

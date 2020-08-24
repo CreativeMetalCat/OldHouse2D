@@ -26,4 +26,6 @@ class OLDHOUSE_API APistolBase : public AWeaponBase
 	TSubclassOf<ABulletBase> BulletClass;
 
 	virtual bool Fire(FVector Location,FRotator Rotaion) override;
+
+	virtual void SetHiddenInShadow(bool Hidden) override;
 };

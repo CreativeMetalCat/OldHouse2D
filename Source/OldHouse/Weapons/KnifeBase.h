@@ -26,4 +26,6 @@ class OLDHOUSE_API AKnifeBase : public AWeaponBase
 	UBoxComponent* DamageBox;
 
 	virtual void DealDamage();
+
+	virtual void SetHiddenInShadow(bool Hidden) override;
 };
