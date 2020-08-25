@@ -31,4 +31,6 @@ class OLDHOUSE_API AAnimatedHoldableActor : public AHoldableActor
 	virtual void BeDropped_Implementation(AActor* HoldingActor) override;
 
 	virtual void Break_Implementation() override;
+
+	virtual void SetFrozenInPlace(bool Frozen) override;
 };

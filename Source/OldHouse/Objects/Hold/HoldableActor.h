@@ -65,10 +65,21 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Sound)
 	USoundBase* PickupSound;
 
+	//if true actor will not simulate physics until player touches it or pickes up
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Physics)
+	bool bFrozenInPlace = false;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Physics)
+	USoundBase* UnFreezeSound;
+	
+
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	void BeHeld(AActor* HoldingActor);
 
 	virtual void BeHeld_Implementation(AActor* HoldingActor);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetFrozenInPlace(bool Frozen);
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
     void BeDropped(AActor* HoldingActor);

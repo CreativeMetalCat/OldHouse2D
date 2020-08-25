@@ -54,3 +54,16 @@ void AAnimatedHoldableActor::Break_Implementation()
         }
     }
 }
+
+void AAnimatedHoldableActor::SetFrozenInPlace(bool Frozen)
+{
+    if (Frozen != bFrozenInPlace)
+    {
+        bFrozenInPlace = Frozen;
+        if (!Frozen && UnFreezeSound != nullptr)
+        {
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), UnFreezeSound, GetActorLocation(), GetActorRotation());
+        }
+    }
+    PhysicsBox->SetSimulatePhysics(!bFrozenInPlace);
+}

@@ -20,6 +20,7 @@ AHoldableActor::AHoldableActor()
 void AHoldableActor::BeginPlay()
 {
 	Super::BeginPlay();
+	SetFrozenInPlace(bFrozenInPlace);
 	ColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AHoldableActor::OnBoxBeginOverlap);
 }
 
@@ -42,12 +43,26 @@ bool AHoldableActor::CanActorBeHeld_Implementation()
 
 void AHoldableActor::BeHeld_Implementation(AActor* HoldingActor)
 {
+	bFrozenInPlace = false;
 	SetActorEnableCollision(false);
 	Holder = HoldingActor;
 	if(PickupSound!=nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(),PickupSound,GetActorLocation(),GetActorRotation());
 	}
+}
+
+void AHoldableActor::SetFrozenInPlace(bool Frozen)
+{
+	if (Frozen != bFrozenInPlace)
+	{
+		bFrozenInPlace = Frozen;
+		if (!Frozen && UnFreezeSound != nullptr)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), UnFreezeSound, GetActorLocation(), GetActorRotation());
+		}
+	}
+	
 }
 
 void AHoldableActor::BeDropped_Implementation(AActor* HoldingActor)
@@ -70,6 +85,7 @@ void AHoldableActor::Break_Implementation()
 
 void AHoldableActor::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	SetFrozenInPlace(false);
 	if (bHasPhysicsSound)
 	{
 		if (OtherActor->GetVelocity().Size() > MinVelocityOnHitToProduceSound || GetVelocity().Size() > MinVelocityOnHitToProduceSound)
