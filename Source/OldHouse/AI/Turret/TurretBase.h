@@ -8,6 +8,8 @@
 #include "Paper2D/Classes/PaperFlipbookComponent.h"
 #include "OldHouse/Weapons/PistolBase.h"
 #include "Components/BoxComponent.h"
+#include "Components/SpotLightComponent.h"
+#include "Components/AudioComponent.h"
 #include "TurretBase.generated.h"
 
 UCLASS()
@@ -38,6 +40,21 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Animations)
 	UPaperFlipbook*IdleAnim;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=ViewConeDisplay)
+	FColor NormalColor;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=ViewConeDisplay)
+	FColor AlertColor;
+	
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category=ViewConeDisplay)
+	UPaperSpriteComponent*ViewConeDisplaySprite; 
+	
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category=ViewConeDisplay)
+	USpotLightComponent* ViewConeLight;
+	
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category=Alert)
+	UAudioComponent* AlarmAudio;
 	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Target)
 	AActor* CurrentTarget;
@@ -89,4 +106,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	virtual FRotator GetShootingRotation()const;
+
+	UFUNCTION(BlueprintPure)
+    virtual FRotator GetAimRotation()const;
 };

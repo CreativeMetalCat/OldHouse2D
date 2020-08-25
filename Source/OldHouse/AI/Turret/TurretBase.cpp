@@ -3,6 +3,8 @@
 
 #include "TurretBase.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 // Sets default values
 ATurretBase::ATurretBase()
 {
@@ -15,27 +17,16 @@ ATurretBase::ATurretBase()
     TurretGunSprite = CreateDefaultSubobject<UPaperFlipbookComponent>(TEXT("TurretGunSprite"));
     TurretGunSprite->SetupAttachment(RootComponent,TEXT("GunSocket"));
 
-	//in case usage of ai perception fail -  uncomment this code and work from here
-	
-    /*ViewBoxCenter = CreateDefaultSubobject<UBoxComponent>(TEXT("ViewBoxCenter"));
-    ViewBoxCenter->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
-    ViewBoxCenter->SetRelativeLocation(FVector(-140, 0, 0));
-    ViewBoxCenter->SetBoxExtent(FVector(48, 32, 56), false);
+	ViewConeDisplaySprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("ViewConeDisplaySprite"));
+	ViewConeDisplaySprite->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
+	ViewConeDisplaySprite->SetRelativeScale3D_Direct(FVector(2.75f,1,2.25f));
+	ViewConeDisplaySprite->SetRelativeRotation(FRotator(180,0,-180));
 
-    ViewSphereCenter = CreateDefaultSubobject<USphereComponent>(TEXT("ViewSphereCenter"));
-    ViewSphereCenter->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
-    ViewSphereCenter->SetRelativeLocation(FVector(-74, 0, 0));
-    ViewSphereCenter->InitSphereRadius(125.f);
+	ViewConeLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("ViewConeLight"));
+	ViewConeLight->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
+	ViewConeLight->SetRelativeRotation(FRotator(180,0,-180));
 
-    ViewSphereRight = CreateDefaultSubobject<USphereComponent>(TEXT("ViewSphereRight"));
-    ViewSphereRight->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
-    ViewSphereRight->SetRelativeLocation(FVector(-140.f, 0, -50));
-    ViewSphereRight->InitSphereRadius(130.f);
-
-    ViewSphereLeft = CreateDefaultSubobject<USphereComponent>(TEXT("ViewSphereLeft"));
-    ViewSphereLeft->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
-    ViewSphereLeft->SetRelativeLocation(FVector(-140.f, 0, 50));
-    ViewSphereLeft->InitSphereRadius(130.f);*/
+	AlarmAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("AlarmSound"));
 }
 
 // Called when the game starts or when spawned
@@ -55,19 +46,55 @@ void ATurretBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	TurretGunSprite->AddLocalRotation(FRotator(DeltaTime * Speed * (bReachedRight ? -1 : 1), 0, 0));
-	if (TurretGunSprite->GetRelativeRotation().Pitch >= MaxRotationAngle) { bReachedRight = true; }
-	else if (TurretGunSprite->GetRelativeRotation().Pitch <= MaxRotationAngle * -1) { bReachedRight = false; }
+	
 
 	if(CurrentTarget != nullptr)
 	{
+		if(!AlarmAudio->IsPlaying())
+		{
+			AlarmAudio->Play();
+		}
+		TurretGunSprite->SetRelativeRotation(GetAimRotation());
+
+		//temp -- start
+		//TurretGunSprite->AddLocalRotation(FRotator(DeltaTime * Speed * (bReachedRight ? -1 : 1), 0, 0));
+		//if (TurretGunSprite->GetRelativeRotation().Pitch >= MaxRotationAngle) { bReachedRight = true; }
+		//else if (TurretGunSprite->GetRelativeRotation().Pitch <= MaxRotationAngle * -1) { bReachedRight = false; }
+		//temp -- end
+		
+		if(ViewConeDisplaySprite != nullptr)
+		{
+			if(ViewConeDisplaySprite->GetSpriteColor() != AlertColor)
+			{
+				ViewConeDisplaySprite->SetSpriteColor(AlertColor);
+			}
+		}
 		Shoot();
+	}
+	else
+	{
+		TurretGunSprite->AddLocalRotation(FRotator(DeltaTime * Speed * (bReachedRight ? -1 : 1), 0, 0));
+		if (TurretGunSprite->GetRelativeRotation().Pitch >= MaxRotationAngle) { bReachedRight = true; }
+		else if (TurretGunSprite->GetRelativeRotation().Pitch <= MaxRotationAngle * -1) { bReachedRight = false; }
+
+		if(AlarmAudio->IsPlaying())
+		{
+			AlarmAudio->StopDelayed(0.5f);
+		}
+		
+		if(ViewConeDisplaySprite != nullptr)
+		{
+			if(ViewConeDisplaySprite->GetSpriteColor() != NormalColor)
+			{
+				ViewConeDisplaySprite->SetSpriteColor(NormalColor);
+			}
+		}
 	}
 }
 
 void ATurretBase::Shoot()
 {
-	GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Purple,"Shoot the dam thing!");
+	
 	if(!ResetAnimTimerHandle.IsValid())
 	{
 		if(Weapon != nullptr)
@@ -98,12 +125,47 @@ void ATurretBase::ResetAnimation()
 void ATurretBase::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	OutLocation = TurretGunSprite->GetSocketLocation(TEXT("MuzzleSocket"));
-	OutRotation = GetShootingRotation();
+	FRotator Rot = TurretGunSprite->GetSocketRotation(TEXT("MuzzleSocket"));
+	Rot.Yaw -= TurretGunSprite->GetSocketTransform(TEXT("MuzzleSocket"), RTS_ParentBoneSpace).Rotator().Roll;
+	Rot.Pitch += 180.f;
+	Rot.Roll += 180.f;
+	OutRotation = Rot;
 }
 
-FRotator ATurretBase::GetShootingRotation()const
+FRotator ATurretBase::GetAimRotation()const
+{	
+	if (CurrentTarget != nullptr)
+	{
+		FRotator res;
+		FVector ThisLocation = FVector(GetActorLocation().X,0,GetActorLocation().Z);
+		FVector TargetLocation = FVector(CurrentTarget->GetActorLocation().X,0,CurrentTarget->GetActorLocation().Z);
+		res = UKismetMathLibrary::FindLookAtRotation(ThisLocation, TargetLocation);
+		res = res.Clamp();
+		
+		if(res.Yaw >= 180)
+		{
+			res.Pitch -= 90.f;
+		}
+		else
+		{
+			res.Pitch += 90.f;
+		}
+		return res;
+	}
+	else
+	{
+		return TurretGunSprite->GetRelativeRotation();
+	}		
+}
+
+FRotator ATurretBase::GetShootingRotation() const
 {
-	FRotator res = TurretGunSprite->GetSocketRotation(TEXT("MuzzleSocket"));
+	FRotator res;
+	
+	res = TurretGunSprite->GetSocketRotation(TEXT("MuzzleSocket"));
+
+	res.Yaw = 0;
+	res.Roll = 0;
 	res.Pitch += 180.f;
 	return res;
 }
