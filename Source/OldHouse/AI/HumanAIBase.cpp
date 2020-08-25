@@ -5,7 +5,6 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "OldHouse/OldHouseCharacter.h"
-#include "Engine.h"
 
 AHumanAIBase::AHumanAIBase()
 {

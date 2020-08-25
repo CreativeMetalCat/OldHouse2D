@@ -7,10 +7,11 @@
 #include "PaperSpriteComponent.h"
 #include "Paper2D/Classes/PaperFlipbookComponent.h"
 #include "OldHouse/Weapons/PistolBase.h"
+#include "Components/BoxComponent.h"
 #include "TurretBase.generated.h"
 
 UCLASS()
-class OLDHOUSE_API ATurretBase : public AActor
+class OLDHOUSE_API ATurretBase : public APawn
 {
 	GENERATED_BODY()
 	
@@ -37,7 +38,13 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Animations)
 	UPaperFlipbook*IdleAnim;
-
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Target)
+	AActor* CurrentTarget;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Target)
+	FName TargetTag = TEXT("Player");
+	
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category=Animations)
 	UPaperFlipbook*ShootingAnim;
 
@@ -58,6 +65,18 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation)
 	float Speed = 10.f;
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = ViewCone)
+	UBoxComponent*ViewBoxCenter;
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = ViewCone)
+	USphereComponent*ViewSphereCenter;
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = ViewCone)
+	USphereComponent*ViewSphereRight;
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = ViewCone)
+	USphereComponent*ViewSphereLeft;
 	
 
 	UFUNCTION(BlueprintCallable)
@@ -66,6 +85,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetAnimation();
 
+	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
+
 	UFUNCTION(BlueprintPure)
-	virtual FRotator GetShootingRotation();
+	virtual FRotator GetShootingRotation()const;
 };

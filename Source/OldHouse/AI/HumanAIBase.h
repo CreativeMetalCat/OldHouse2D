@@ -14,20 +14,20 @@ UCLASS()
 class OLDHOUSE_API AHumanAIBase : public AAIController
 {
 	GENERATED_BODY()
-	protected:
+protected:
 	FTimerHandle UpdateTimerHandle;
-	public:
+public:
 	AHumanAIBase();
-	
+
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
-	UAIPerceptionComponent*Senses;
+	UAIPerceptionComponent* Senses;
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBehaviorTree* BehaviorTree;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bCanSeeEnemy = false;
-	
+
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 	virtual void Tick(float DeltaSeconds) override;
