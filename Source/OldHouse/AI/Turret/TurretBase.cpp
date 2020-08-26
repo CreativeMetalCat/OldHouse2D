@@ -163,10 +163,15 @@ FRotator ATurretBase::GetShootingRotation() const
 	FRotator res;
 	
 	res = TurretGunSprite->GetSocketRotation(TEXT("MuzzleSocket"));
-
-	res.Yaw = 0;
 	res.Roll = 0;
-	res.Pitch += 180.f;
+	if(res.Yaw >= 180)
+	{
+		res.Pitch -= 180.f;
+	}
+	else
+	{
+		res.Pitch += 180.f;
+	}
 	return res;
 }
 
