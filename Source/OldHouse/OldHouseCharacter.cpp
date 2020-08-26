@@ -192,6 +192,8 @@ void AOldHouseCharacter::Die()
 		if ( PC != nullptr)
 		{
 			DisableInput(PC);
+			LoadLastSave();//for testing only.
+			//TODO: Remove this after testing
 		}
 		bDead = true;
 		if (DeathAnimation != nullptr)

@@ -60,55 +60,55 @@ protected:
 	UBoxComponent* WallGrabBox;
 public:
 	// The animation to play while idle (standing still)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations,SaveGame)
 	class UPaperFlipbook* IdleAnimation;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations,SaveGame)
 	UPaperFlipbook* StabAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations,SaveGame)
 	UPaperFlipbook* DeathAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations,SaveGame)
 	UPaperFlipbook* PistolIdleAnimation;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WeaponAnimations,SaveGame)
 	UPaperFlipbook* PistolWalkAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations,SaveGame)
 	class UPaperFlipbook* UnPossesAnimation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items,SaveGame)
 	TArray<FItemData> Items;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Hold)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Hold,SaveGame)
 	AHoldableActor* CurrentlyHeldActor = nullptr;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death,SaveGame)
 	bool bDead = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death,SaveGame)
 	USoundBase* DeathSound;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses,SaveGame)
 	float PossesTime = 1.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Weapon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Weapon,SaveGame)
 	AWeaponBase* Weapon;	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=WeaponAnims)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=WeaponAnims,SaveGame)
 	bool bPlayingMeleeAttackAnim = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=HiddenInShadow)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=HiddenInShadow,SaveGame)
 	bool bHiddenInShadow = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses,SaveGame)
 	bool bControlledByPlayer = false;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses,SaveGame)
 	AOldHouseCharacter*OriginalBody = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Climbing)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Climbing,SaveGame)
 	bool bIsHoldingWall = false;
 	
 
@@ -137,7 +137,7 @@ public:
 	// End of APawn interface
 
 
-	UFUNCTION(BLueprintPure)
+	UFUNCTION(BlueprintPure)
 	virtual bool CanBePossesed(){return true;}
 
 	UFUNCTION(BLueprintPure)
@@ -167,6 +167,11 @@ public:
 
 	UFUNCTION(BlueprintPure)
     FRotator GetWeaponSocketRotation()const;
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent,Category= SaveSystem)
+	void LoadLastSave();
+	
+	void LoadLastSave_Implementation(){}
 	
 	
 	virtual void Attack();

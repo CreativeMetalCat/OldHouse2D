@@ -74,13 +74,13 @@ public:
 	TSubclassOf<APistolBase>WeaponClass;
 
 	//Total angle is MaxRotationAngle*2
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation,SaveGame)
 	float MaxRotationAngle = 30;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation,SaveGame)
 	bool bReachedRight = false;
 
-	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation)
+	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = Rotation,SaveGame)
 	float Speed = 10.f;
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = ViewCone)

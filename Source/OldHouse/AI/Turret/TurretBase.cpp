@@ -19,7 +19,8 @@ ATurretBase::ATurretBase()
 
 	ViewConeDisplaySprite = CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("ViewConeDisplaySprite"));
 	ViewConeDisplaySprite->SetupAttachment(TurretGunSprite,TEXT("MuzzleSocket"));
-	ViewConeDisplaySprite->SetRelativeScale3D_Direct(FVector(2.75f,1,2.25f));
+	ViewConeDisplaySprite->SetRelativeScale3D_Direct(FVector(3.75f,1,2.75f));
+	ViewConeDisplaySprite->SetRelativeLocation(FVector(-110.f,0,0));
 	ViewConeDisplaySprite->SetRelativeRotation(FRotator(180,0,-180));
 
 	ViewConeLight = CreateDefaultSubobject<USpotLightComponent>(TEXT("ViewConeLight"));
