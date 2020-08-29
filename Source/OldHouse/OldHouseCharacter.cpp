@@ -409,6 +409,7 @@ void AOldHouseCharacter::Possess()
 	if (GetController() != nullptr)
 	{
 		APossesivePlayerController*PC = Cast<APossesivePlayerController>(GetController());
+		PC->OriginalHost = this;
 		if ( PC != nullptr)
 		{
 			if(OriginalBody != nullptr && OriginalBody->Tags.Find("Player") != -1)
@@ -492,6 +493,19 @@ void AOldHouseCharacter::BeginPlay()
 	WallGrabBox->OnComponentBeginOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxBeginOverlap);
 
 	WallGrabBox->OnComponentEndOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxEndOverlap);
+
+	if(GetController() != nullptr)
+	{
+		APlayerController * PC = Cast<APlayerController>(GetController());
+		if(PC != nullptr)
+		{
+			PC->bShowMouseCursor = true;
+
+			FInputModeGameAndUI inputMode = FInputModeGameAndUI();
+			inputMode.SetHideCursorDuringCapture(false);
+			PC->SetInputMode(FInputModeGameAndUI());
+		}
+	}
 }
 
 float AOldHouseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
