@@ -7,18 +7,18 @@
 void APossesivePlayerController::OnChangedBodies()
 {
     if (PossesSound != nullptr)
-    {
-        UGameplayStatics::PlaySound2D(GetWorld(), PossesSound);
+     {
+         UGameplayStatics::PlaySound2D(GetWorld(), PossesSound);
     }
 }
 
-void APossesivePlayerController::BeginPlay()
-{
-    OriginalHost = GetPawn();
-    
-    FInputModeGameAndUI inputMode = FInputModeGameAndUI();
-    inputMode.SetHideCursorDuringCapture(false);
-    SetInputMode(FInputModeGameAndUI());
-
-    bShowMouseCursor = true;
-}
+//void APossesivePlayerController::BeginPlay()
+// {
+//     OriginalHost = GetPawn();
+//     
+//     FInputModeGameAndUI inputMode = FInputModeGameAndUI();
+//     inputMode.SetHideCursorDuringCapture(false);
+//     SetInputMode(FInputModeGameAndUI());
+//
+//     bShowMouseCursor = true;
+// }

@@ -2,7 +2,7 @@
 
 #include "OldHouseCharacter.h"
 #include "PaperFlipbookComponent.h"
-#include "Components/TextRenderComponent.h"
+//#include "Components/TextRenderComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -96,7 +96,7 @@ AOldHouseCharacter::AOldHouseCharacter()
 	WallGrabBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	WallGrabBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic,ECollisionResponse::ECR_Overlap);
 
-	WallGrabBox->OnComponentBeginOverlap.AddDynamic(this, &AOldHouseCharacter::OnWallGrabBoxBeginOverlap);
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -348,8 +348,6 @@ FName AOldHouseCharacter::GetWeaponAttachmentSocketName(EWeaponAnimType animType
 	}
 }
 
-
-
 void AOldHouseCharacter::Attack()
 {
 	if(!bHiddenInShadow)
@@ -396,6 +394,13 @@ void AOldHouseCharacter::EndMeleeAttackAnim()
 void AOldHouseCharacter::FinishMeleeAttack()
 {
 	bPlayingMeleeAttackAnim = false;
+}
+
+void AOldHouseCharacter::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	if(GetController() != nullptr){GetController()->UnPossess();}
 }
 
 void AOldHouseCharacter::Possess()

@@ -14,6 +14,8 @@ class OLDHOUSE_API APossesivePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	public:
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
 	APawn* OriginalHost;
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
@@ -21,5 +23,5 @@ class OLDHOUSE_API APossesivePlayerController : public APlayerController
 
 	virtual void OnChangedBodies();
 	
-	virtual void BeginPlay() override;
+	//virtual void BeginPlay() override;
 };

@@ -39,8 +39,7 @@ class AOldHouseCharacter : public APaperCharacter,public IPickupInterface
 	/** Camera boom positioning the camera beside the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
-
-	UTextRenderComponent* TextComponent;
+	
 	virtual void Tick(float DeltaSeconds) override;
 protected:
 
@@ -182,6 +181,8 @@ public:
 	virtual void EndMeleeAttackAnim();
 	
 	virtual void FinishMeleeAttack();
+
+	virtual void BeginDestroy() override;
 	
 	
 	void Possess();
