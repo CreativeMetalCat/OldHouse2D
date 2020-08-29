@@ -58,6 +58,10 @@ AOldHouseCharacter::AOldHouseCharacter()
 	WallGrabBox->SetBoxExtent(FVector(24,32,8));
 	WallGrabBox->SetRelativeLocation(FVector(50,0,20));
 
+	DeathAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathAudio"));
+	DeathAudio->SetupAttachment(RootComponent);
+	DeathAudio->bAutoActivate = false;
+
 	// Configure character movement
 	GetCharacterMovement()->GravityScale = 2.0f;
 	GetCharacterMovement()->AirControl = 0.80f;
@@ -201,9 +205,9 @@ void AOldHouseCharacter::Die()
 			GetSprite()->SetFlipbook(DeathAnimation);
 			GetSprite()->SetLooping(false);
 		}
-		if (DeathSound != nullptr)
+		if(!DeathAudio->IsPlaying())
 		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation(), GetActorRotation());
+			DeathAudio->Play();
 		}
 		if (GetController() != nullptr)
 		{

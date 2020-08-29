@@ -23,3 +23,13 @@ void AAIHuman::OnPosses(AOldHouseCharacter*originalBody)
     OriginalBody = originalBody;
     bControlledByPlayer = true;
 }
+
+void AAIHuman::BeginPlay()
+{
+    Super::BeginPlay();
+
+   if(DefaultWeaponClass != nullptr)
+   {
+       SetWeapon(DefaultWeaponClass);
+   }
+}

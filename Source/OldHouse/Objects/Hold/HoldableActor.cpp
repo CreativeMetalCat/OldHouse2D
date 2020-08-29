@@ -12,8 +12,7 @@ AHoldableActor::AHoldableActor()
 
 	ColliderBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollider"));
 	ColliderBox->SetCollisionResponseToAllChannels(::ECR_Overlap);
-
-	ColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AHoldableActor::OnBoxBeginOverlap);
+	RootComponent = ColliderBox;
 }
 
 // Called when the game starts or when spawned

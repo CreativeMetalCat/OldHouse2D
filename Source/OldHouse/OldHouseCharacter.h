@@ -90,6 +90,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Death,SaveGame)
 	USoundBase* DeathSound;
 
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,Category = Death,SaveGame)
+	UAudioComponent* DeathAudio;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=Posses,SaveGame)
 	float PossesTime = 1.f;
 
