@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "PatrollingMovement/PatrollingPointBase.h"
+#include "PatrollingMovement/PatrolSystemBase.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "HumanAIBase.generated.h"
 
@@ -28,6 +30,12 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bCanSeeEnemy = false;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category= Patrolling)
+	APatrolSystemBase * CurrentPatrollingSystem;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category= Patrolling)
+	int32 CurrentPatrolPointId = 0 ;
+
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 	virtual void Tick(float DeltaSeconds) override;
@@ -38,4 +46,20 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void UpdatePerceivedActors();
+
+	UFUNCTION(BlueprintCallable,Category= Patrolling)
+	void InitPatrollingSystem();
+	
+	UFUNCTION(BlueprintCallable,Category= Patrolling)
+	bool SetNewPatrolPoint();
+	
+	//returns id of new selected point
+	UFUNCTION(BlueprintCallable,Category= Patrolling)
+	virtual int32 SelectNewPatrollingPoint();
+	
+	UFUNCTION(BlueprintCallable,Category= Patrolling)
+	virtual APatrolSystemBase* GetPatrollingSystem();
+
+	UFUNCTION(BlueprintCallable,Category= Patrolling)
+	virtual APatrollingPointBase* GetCurrentPatrollingPoint();
 };

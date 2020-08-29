@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PatrollingPointBase.h"
 #include "GameFramework/Actor.h"
 #include "Components/BillboardComponent.h"
 #include "PatrolSystemBase.generated.h"
@@ -26,5 +27,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBillboardComponent* EditorBillboard;
+
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	TArray<APatrollingPointBase*> Points;
 	
 };

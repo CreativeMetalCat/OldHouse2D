@@ -2,6 +2,8 @@
 
 
 #include "HumanAIBase.h"
+
+#include "AIHuman.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "OldHouse/OldHouseCharacter.h"
@@ -63,6 +65,8 @@ void AHumanAIBase::BeginPlay()
         RunBehaviorTree(BehaviorTree);
     }
 
+    InitPatrollingSystem();
+    
     GetWorldTimerManager().SetTimer(UpdateTimerHandle,this,&AHumanAIBase::UpdatePerceivedActors,1.f,true);
 }
 
@@ -119,3 +123,73 @@ void AHumanAIBase::UpdatePerceivedActors()
     }
 }
 
+void AHumanAIBase::InitPatrollingSystem()
+{
+    CurrentPatrollingSystem = GetPatrollingSystem();
+    
+    if(CurrentPatrollingSystem!= nullptr)
+    {
+        SetNewPatrolPoint();
+    }
+}
+
+bool AHumanAIBase::SetNewPatrolPoint()
+{
+    if( GetBlackboardComponent() != nullptr && CurrentPatrollingSystem != nullptr)
+    {
+        if(CurrentPatrollingSystem->Points.IsValidIndex(CurrentPatrolPointId))
+        {         
+            GetBlackboardComponent()->SetValueAsObject(FName("MovementTarget"), CurrentPatrollingSystem->Points[CurrentPatrolPointId]);            
+            return true;
+        }
+    }
+    return false;
+}
+
+int32 AHumanAIBase::SelectNewPatrollingPoint()
+{
+    if(CurrentPatrollingSystem!= nullptr)
+    {
+        if(CurrentPatrollingSystem->Points.IsValidIndex(CurrentPatrolPointId+1))
+        {
+            CurrentPatrolPointId += 1;
+        }
+        else
+        {
+            CurrentPatrolPointId = 0;
+        }
+        SetNewPatrolPoint();
+        return CurrentPatrolPointId;
+    }
+    else
+    {
+        return INDEX_NONE;
+    }
+}
+
+APatrolSystemBase* AHumanAIBase::GetPatrollingSystem()
+{
+    if (GetPawn() != nullptr)
+    {
+      
+        AAIHuman * human = Cast<AAIHuman>(GetPawn());
+        if(human != nullptr)
+        {
+            return human->CurrentPatrollingSystem;
+        }
+    }
+    
+    return nullptr;
+}
+
+APatrollingPointBase* AHumanAIBase::GetCurrentPatrollingPoint()
+{
+    if(CurrentPatrollingSystem!= nullptr)
+    {
+        if(CurrentPatrollingSystem->Points.IsValidIndex(CurrentPatrolPointId))
+        {
+            return CurrentPatrollingSystem->Points[CurrentPatrolPointId];
+        }
+    }
+    return nullptr;
+}

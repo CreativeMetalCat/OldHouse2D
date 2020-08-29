@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "OldHouse/OldHouseCharacter.h"
+#include "PatrollingMovement/PatrolSystemBase.h"
+
 #include "AIHuman.generated.h"
 
 /**
@@ -15,8 +17,11 @@ class OLDHOUSE_API AAIHuman : public AOldHouseCharacter
 	GENERATED_BODY()
 	public:
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category= AIWeapon)
 	TSubclassOf<AWeaponBase> DefaultWeaponClass;
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere,Category= Patrolling)
+	APatrolSystemBase * CurrentPatrollingSystem;
 	
 	virtual void OnUnPosses() override;
 

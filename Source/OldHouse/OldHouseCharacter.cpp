@@ -193,7 +193,7 @@ void AOldHouseCharacter::Die()
 	if (!bDead)
 	{
 		APossesivePlayerController*PC = Cast<APossesivePlayerController>(GetController());
-		if ( PC != nullptr)
+		if ( PC != nullptr || Tags.Find("Player") != INDEX_NONE)
 		{
 			DisableInput(PC);
 			LoadLastSave();//for testing only.
