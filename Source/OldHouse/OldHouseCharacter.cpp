@@ -436,6 +436,10 @@ void AOldHouseCharacter::Possess()
 								OnUnPosses();
 								Other->OnPosses(this);
 								PC->OnChangedBodies();
+								if (PossesSound != nullptr)
+								{
+									UGameplayStatics::PlaySound2D(GetWorld(), PossesSound);
+								}
 								PC->Possess(Other);
 							}
 						}

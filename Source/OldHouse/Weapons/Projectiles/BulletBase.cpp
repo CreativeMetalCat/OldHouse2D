@@ -51,31 +51,33 @@ void ABulletBase::OnCollisionBeginOverlap(UPrimitiveComponent* OverlappedComp, A
 		AOldHouseCharacter*human = Cast<AOldHouseCharacter>(OtherActor);
 		if(human != nullptr)
 		{
-			if (human->Tags.Find("Player") != -1)
+			if(!human->bHiddenInShadow)//you can not kill this human because it is out of line of fire
 			{
-				if (Tags.Find("ShotByPlayer") != -1)
+				if (human->Tags.Find("Player") != -1)
 				{
-					//this bullet is shot by player so we ignore it 
+					if (Tags.Find("ShotByPlayer") != -1)
+					{
+						//this bullet is shot by player so we ignore it 
+					}
+					else if (Tags.Find("ShotByEnemy") != -1)
+					{
+						human->Die();
+						Destroy();
+					}				
 				}
-				else if (Tags.Find("ShotByEnemy") != -1)
+				else if(human->Tags.Find("Enemy") != -1)
 				{
-					human->Die();
-					Destroy();
-				}				
-			}
-			else if(human->Tags.Find("Enemy") != -1)
-			{
-				if (Tags.Find("ShotByPlayer") != -1)
-				{				
-					human->Die();
-					Destroy();
-				}
-				else if (Tags.Find("ShotByEnemy") != -1)
-				{
+					if (Tags.Find("ShotByPlayer") != -1)
+					{				
+						human->Die();
+						Destroy();
+					}
+					else if (Tags.Find("ShotByEnemy") != -1)
+					{
 					
-				}	
+					}	
+				}
 			}
-
 		}
 	}
 }

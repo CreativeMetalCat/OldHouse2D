@@ -58,6 +58,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly)
 	UBoxComponent* WallGrabBox;
 public:
+
+	UPROPERTY(BlueprintReadWrite,EditDefaultsOnly,SaveGame)
+	USoundBase* PossesSound;
+	
 	// The animation to play while idle (standing still)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations,SaveGame)
 	class UPaperFlipbook* IdleAnimation;
